@@ -1,14 +1,9 @@
-/* SCSS entry that includes the refined findbar mixin with defaults you can change.
-   The compiled CSS is written to chrome/findbar.css by the build workflow or `npm run build`.
-*/
-
-@use 'sass:list';
-@use 'sass:math';
-@use 'sass:map';
-
 /* Refined findbar for Firefox
    Extended with fixed/centered placement, scaling, and side margins.
    Attribution: Based on and inspired by https://github.com/ravindUwU/firefox-refined-findbar
+
+   The customization options are at the bottom of this document.
+
  * Usage:
  * - Edit the options below to customize the findbar appearance
  * - Run `npm run build` to compile to CSS
@@ -16,6 +11,10 @@
  * 
  * @see chrome/userChrome.css for the Firefox integration
 */
+
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:map';
 
 @mixin /* sig:start */
   refined-findbar(
