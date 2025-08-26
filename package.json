@@ -21,7 +21,8 @@
     "deploy:local": "node scripts/deploy.js --local",
     "deploy:ps1": "pwsh scripts/deploy.ps1",
     "deploy:ps1:local": "pwsh scripts/deploy.ps1 -Local",
-    "test:deploy": "node scripts/test-deploy.js"
+    "test:deploy": "node scripts/test-deploy.js",
+    "test:pages": "node scripts/test-pages.js"
   },
   "devDependencies": {
     "sass": "^1.77.0",
