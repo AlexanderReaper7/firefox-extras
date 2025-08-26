@@ -1,0 +1,6 @@
+node_modules/
+.DS_Store
+
+# Do not commit compiled CSS; it ships via Releases
+chrome/findbar.css
+firefox-chrome.zip
