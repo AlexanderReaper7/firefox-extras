@@ -4,3 +4,20 @@ node_modules/
 # Do not commit compiled CSS; it ships via Releases
 chrome/findbar.css
 firefox-chrome.zip
+
+# Development and build artifacts
+*.css.map
+.sass-cache/
+.cache/
+
+# Temporary files
+*.tmp
+*.temp
+.vscode/settings-user.json
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+._*
+.Spotlight-V100
+.Trashes

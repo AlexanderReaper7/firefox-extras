@@ -6,9 +6,24 @@
   "private": true,
   "scripts": {
     "build": "sass src/findbar.scss chrome/findbar.css --no-source-map",
-    "watch": "sass --watch src/findbar.scss:chrome/findbar.css --no-source-map"
+    "build:watch": "sass --watch src/findbar.scss:chrome/findbar.css --no-source-map",
+    "dev": "npm run build:watch",
+    "lint": "npm run lint:scss",
+    "lint:scss": "stylelint 'src/**/*.scss'",
+    "lint:fix": "npm run lint:scss:fix",
+    "lint:scss:fix": "stylelint 'src/**/*.scss' --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "clean": "rm -f chrome/findbar.css chrome/findbar.css.map",
+    "validate": "npm run lint && npm run format:check && npm run build",
+    "prepare": "npm run validate"
   },
   "devDependencies": {
-    "sass": "^1.77.0"
+    "sass": "^1.77.0",
+    "stylelint": "^14.16.1",
+    "stylelint-config-prettier": "^9.0.5",
+    "stylelint-config-standard-scss": "^6.1.0",
+    "stylelint-scss": "^4.7.0",
+    "prettier": "^3.1.0"
   }
 }

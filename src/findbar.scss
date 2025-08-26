@@ -9,6 +9,12 @@
 /* Refined findbar for Firefox
    Extended with fixed/centered placement, scaling, and side margins.
    Attribution: Based on and inspired by https://github.com/ravindUwU/firefox-refined-findbar
+ * Usage:
+ * - Edit the options below to customize the findbar appearance
+ * - Run `npm run build` to compile to CSS
+ * - Copy the generated chrome/ folder to your Firefox profile
+ * 
+ * @see chrome/userChrome.css for the Firefox integration
 */
 
 @mixin /* sig:start */
@@ -349,32 +355,40 @@ $-checkbox-selectors: (
   @return $css;
 }
 
+/**
+ * Configure the findbar with custom options here.
+ */
 // prettier-ignore
 @include refined-findbar(
-  $float: true,
-  $float-alignment: top,
-  $float-distance: 18px,
+  // === Positioning Options ===
+  $float: true,                     // Enable floating/overlay mode
+  $float-alignment: top,            // Position at top of viewport
+  $float-distance: 18px,            // Distance from viewport edge
 
-  $buttons: true,
-  $buttons-grouped: true,
+  // === Button Configuration ===
+  $buttons: true,                   // Show prev/next navigation buttons
+  $buttons-grouped: true,           // Group buttons visually with text box
 
-  $hide-close-button: false,
-  $hide-when-unfocused: false,
-  $opacity-when-unfocused: 1,
+  // === Visibility Options ===
+  $hide-close-button: false,        // Show/hide the close button
+  $hide-when-unfocused: false,      // Auto-hide when not in use
+  $opacity-when-unfocused: 1,       // Transparency when not focused (0-1)
 
+  // === Element Order ===
+  // Customize the order of findbar elements
   $order: (
-    TEXT_BOX,
-    CHECKBOX_HIGHLIGHT_ALL,
-    CHECKBOX_MATCH_CASE,
-    CHECKBOX_MATCH_DIACRITICS,
-    CHECKBOX_WHOLE_WORDS,
-    LABELS,
-    DESCRIPTION,
+    TEXT_BOX,                       // Search input field
+    CHECKBOX_HIGHLIGHT_ALL,         // Highlight all matches option
+    CHECKBOX_MATCH_CASE,            // Case-sensitive search option
+    CHECKBOX_MATCH_DIACRITICS,      // Match diacritics option
+    CHECKBOX_WHOLE_WORDS,           // Whole words only option
+    LABELS,                         // Status labels (e.g., "1 of 5")
+    DESCRIPTION,                    // Additional descriptions
   ),
 
-  // Extended options
-  $fixed: true,
-  $centered: true,
-  $scale: 1.5,
-  $side-margin: null
+  // === Extended Layout Options ===
+  $fixed: true,                     // Use fixed positioning (stays in viewport)
+  $centered: true,                  // Center horizontally on the page
+  $scale: 1.5,                      // Scale factor for size (1.0 = default)
+  $side-margin: null                // Custom side margins (null = auto)
 );
