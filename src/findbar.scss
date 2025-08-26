@@ -1,0 +1,35 @@
+/* SCSS entry that includes the refined findbar mixin with defaults you can change.
+   The compiled CSS is written to chrome/findbar.css by the build workflow or `npm run build`.
+*/
+
+@use "./refined-findbar" as *;
+
+// prettier-ignore
+@include refined-findbar(
+  $float: true,
+  $float-alignment: top,
+  $float-distance: 18px,
+
+  $buttons: true,
+  $buttons-grouped: true,
+
+  $hide-close-button: false,
+  $hide-when-unfocused: false,
+  $opacity-when-unfocused: 1,
+
+  $order: (
+    TEXT_BOX,
+    CHECKBOX_HIGHLIGHT_ALL,
+    CHECKBOX_MATCH_CASE,
+    CHECKBOX_MATCH_DIACRITICS,
+    CHECKBOX_WHOLE_WORDS,
+    LABELS,
+    DESCRIPTION,
+  ),
+
+  // Extended options
+  $fixed: true,
+  $centered: true,
+  $scale: 1.5,
+  $side-margin: null
+);

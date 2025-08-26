@@ -1,0 +1,8 @@
+/* Firefox userChrome entry point
+   This file imports the generated findbar styles when present.
+
+   Attribution: Based on and inspired by
+   https://github.com/ravindUwU/firefox-refined-findbar
+*/
+
+@import url("./findbar.css");

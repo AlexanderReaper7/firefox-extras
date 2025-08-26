@@ -1,0 +1,14 @@
+{
+  "name": "firefox-extras",
+  "version": "1.0.0",
+  "description": "Firefox chrome/ refined findbar (fixed, centered, scalable) + CI to release compiled CSS",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "sass src/findbar.scss chrome/findbar.css --no-source-map",
+    "watch": "sass --watch src/findbar.scss:chrome/findbar.css --no-source-map"
+  },
+  "devDependencies": {
+    "sass": "^1.77.0"
+  }
+}
