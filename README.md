@@ -22,17 +22,10 @@ Option A: Quick Install (Recommended)
 To install automatically via PowerShell (no manual downloads needed), run:
 PowerShell
 
-iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex
+    iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex
 
-    No dependencies: Only PowerShell required (Windows PowerShell or PowerShell Core on macOS/Linux)
-    What it does:
-        Finds your active Firefox profile
-        Downloads and installs the latest release
-        Configures required preferences
-        No manual steps or zip file handling
-
-    PowerShell Core required on non-Windows platforms.
-    Always review remote scripts before running.
+PowerShell Core required on non-Windows platforms.
+**Always review remote scripts before running.**
 
 
 Option B: Manual Installation
@@ -46,14 +39,14 @@ Option B: Manual Installation
    `toolkit.legacyUserProfileCustomizations.stylesheets = true`.
 5. Restart Firefox.
 
-Option B: Build locally
+Option C: Build locally
 
 1. `npm install`
 2. `npm run build` (outputs `chrome/findbar.css` locally; note it’s ignored by
    git)
 3. Copy the `chrome/` folder into your Firefox profile and restart Firefox.
 
-Option C: Automated deployment
+Option D: Automated deployment
 
 **Node.js version (cross-platform):**
 
