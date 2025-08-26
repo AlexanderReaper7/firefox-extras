@@ -352,6 +352,32 @@ async function deploy() {
 if (require.main === module) {
   const args = process.argv.slice(2);
 
+  // Show help
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+Firefox Extras Deployment Script
+
+Usage:
+  npm run deploy                 Download and install latest release
+  npm run deploy v1.0.0          Download and install specific version
+  npm run deploy:local           Install from local build
+  npm run test:deploy            Test deployment functionality
+
+Options:
+  --help, -h                     Show this help message
+
+The deployment script will:
+- Automatically detect your Firefox profile directory
+- Download the latest release from GitHub (or use local build)
+- Extract and install the chrome folder
+- Configure Firefox preferences
+- No manual steps required!
+
+Supported platforms: Windows, macOS, Linux
+    `);
+    process.exit(0);
+  }
+
   if (args.includes('--local')) {
     deployLocal();
   } else {
