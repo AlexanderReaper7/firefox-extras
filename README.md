@@ -35,6 +35,21 @@ Option B: Build locally
    git)
 3. Copy the `chrome/` folder into your Firefox profile and restart Firefox.
 
+Option C: Automated deployment (recommended)
+
+1. `npm install`
+2. `npm run deploy` (downloads latest release and installs automatically)
+   - Or `npm run deploy v1.0.0` to install a specific version
+   - Or `npm run deploy:local` to install from local build
+
+The deployment command will:
+
+- Automatically find your Firefox profile directory
+- Download and extract the latest release
+- Install the chrome folder to your profile
+- Configure Firefox preferences
+- No manual steps required!
+
 ---
 
 ## Customize (easy)
