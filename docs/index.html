@@ -27,6 +27,7 @@
       <textarea id="scss"></textarea>
       <p>
         <button id="copy">Copy SCSS</button>
+        <button id="generateLink">Generate Playground Link</button>
         <a href="https://sass-lang.com/playground/" target="_blank" rel="noreferrer">
           <button>Open Sass Playground</button>
         </a>
@@ -79,11 +80,79 @@
 );
 `;
     document.getElementById('scss').value = scss;
+    
+    // Copy SCSS to clipboard
     document.getElementById('copy').addEventListener('click', async () => {
       const el = document.getElementById('scss');
       el.select();
       el.setSelectionRange(0, el.value.length);
       try { await navigator.clipboard.writeText(el.value); } catch {}
+    });
+    
+    // Generate Playground Link
+    document.getElementById('generateLink').addEventListener('click', async () => {
+      const scssContent = document.getElementById('scss').value;
+      
+      try {
+        // Implement compression similar to the reference implementation
+        async function deflateToBase64(input) {
+          const encoder = new TextEncoder();
+          const data = encoder.encode(input);
+          
+          // Use CompressionStream if available (modern browsers)
+          if ('CompressionStream' in window) {
+            const compressionStream = new CompressionStream('deflate');
+            const writer = compressionStream.writable.getWriter();
+            const reader = compressionStream.readable.getReader();
+            
+            writer.write(data);
+            writer.close();
+            
+            const chunks = [];
+            let done = false;
+            while (!done) {
+              const { value, done: readerDone } = await reader.read();
+              done = readerDone;
+              if (value) chunks.push(value);
+            }
+            
+            const compressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+            let offset = 0;
+            for (const chunk of chunks) {
+              compressed.set(chunk, offset);
+              offset += chunk.length;
+            }
+            
+            return btoa(String.fromCharCode(...compressed));
+          } else {
+            // Fallback: just use base64 without compression
+            return btoa(input);
+          }
+        }
+        
+        async function serializeStateContents(inputValue) {
+          // Format: inputFormat(scss=1) + outputFormat(expanded=1) + content
+          const persistedState = `11${inputValue}`;
+          return await deflateToBase64(persistedState);
+        }
+        
+        const encodedContent = await serializeStateContents(scssContent);
+        const playgroundUrl = `https://sass-lang.com/playground/#${encodedContent}`;
+        
+        // Copy URL to clipboard and provide feedback
+        await navigator.clipboard.writeText(playgroundUrl);
+        const originalText = document.getElementById('generateLink').textContent;
+        document.getElementById('generateLink').textContent = 'URL Copied!';
+        
+        setTimeout(() => {
+          document.getElementById('generateLink').textContent = originalText;
+        }, 2000);
+        
+      } catch (error) {
+        // Fallback: just open the playground
+        window.open('https://sass-lang.com/playground/', '_blank');
+        console.error('Failed to generate playground link:', error);
+      }
     });
   </script>
 </body>
