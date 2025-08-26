@@ -9,6 +9,8 @@ Always reference these instructions first and fallback to search or bash
 commands only when you encounter unexpected information that does not match the
 info here.
 
+Keep this documentation up-to-date.
+
 ## Working Effectively
 
 ### Bootstrap and Build
