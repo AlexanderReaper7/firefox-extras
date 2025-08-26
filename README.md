@@ -1,17 +1,9 @@
 # Firefox Extras: Refined Findbar (centered, fixed, scalable)
 
 This repository provides a Firefox `chrome/` customization focused on a refined
-findbar:
+findbar.
 
-- Fixed and optionally centered positioning
-- Scale factor (e.g., 150%) including font-size and spacing
-- Side margin (defaults to float distance)
-- CI builds compiled CSS and attaches it to GitHub Releases (not committed to
-  source)
-
-## Attribution
-
-- Based on and inspired by: https://github.com/ravindUwU/firefox-refined-findbar
+### Based on and inspired by: https://github.com/ravindUwU/firefox-refined-findbar
 
 ## Options (SCSS)
 
