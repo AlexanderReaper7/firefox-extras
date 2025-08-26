@@ -13,6 +13,62 @@ Attribution
 
 - Based on and inspired by: https://github.com/ravindUwU/firefox-refined-findbar
 
+## Options (SCSS)
+
+```scss
+@include refined-findbar(
+  // === Positioning Options ===
+  $float: true,
+  // Enable floating/overlay mode
+  $float-alignment: top,
+  // Position at top of viewport
+  $float-distance: 18px,
+
+  // Distance from viewport edge
+  // === Button Configuration ===
+  $buttons: true,
+  // Show prev/next navigation buttons
+  $buttons-grouped: true,
+
+  // Group buttons visually with text box
+  // === Visibility Options ===
+  $hide-close-button: false,
+  // Show/hide the close button
+  $hide-when-unfocused: false,
+  // Auto-hide when not in use
+  $opacity-when-unfocused: 1,
+
+  // Transparency when not focused (0-1)
+  // === Element Order ===
+  // Customize the order of findbar elements
+  $order: (
+      TEXT_BOX,
+      // Search input field
+      CHECKBOX_HIGHLIGHT_ALL,
+      // Highlight all matches option
+      CHECKBOX_MATCH_CASE,
+      // Case-sensitive search option
+      CHECKBOX_MATCH_DIACRITICS,
+      // Match diacritics option
+      CHECKBOX_WHOLE_WORDS,
+      // Whole words only option
+      LABELS,
+      // Status labels (e.g., "1 of 5")
+      DESCRIPTION,
+      // Additional descriptions
+    ),
+
+  // === Extended Layout Options ===
+  $fixed: true,
+  // Use fixed positioning (stays in viewport)
+  $centered: true,
+  // Center horizontally on the page
+  $scale: 1.5,
+  // Scale factor for size (1.0 = default)
+  $side-margin: null // Custom side margins (null = auto)
+);
+```
+
 ---
 
 ## Install
@@ -115,45 +171,6 @@ This project includes VS Code workspace settings with:
 - File associations and syntax highlighting
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development instructions.
-
----
-
-## Options (SCSS)
-
-New options:
-
-- `$fixed: true|false` — viewport anchoring
-- `$centered: true|false` — horizontal centering
-- `$scale: number` — scale overall size (1.5 = 150%)
-- `$side-margin: length|null` — default `null` uses `$float-distance`
-
-Example:
-
-```scss
-@include refined-findbar(
-  $float: true,
-  $float-alignment: top,
-  $float-distance: 18px,
-  $buttons: true,
-  $buttons-grouped: true,
-  $hide-close-button: false,
-  $hide-when-unfocused: false,
-  $opacity-when-unfocused: 1,
-  $order: (
-    TEXT_BOX,
-    CHECKBOX_HIGHLIGHT_ALL,
-    CHECKBOX_MATCH_CASE,
-    CHECKBOX_MATCH_DIACRITICS,
-    CHECKBOX_WHOLE_WORDS,
-    LABELS,
-    DESCRIPTION,
-  ),
-  $fixed: true,
-  $centered: true,
-  $scale: 1.5,
-  $side-margin: null
-);
-```
 
 ---
 
