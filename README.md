@@ -24,9 +24,8 @@ PowerShell
 
     iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex
 
-PowerShell Core required on non-Windows platforms.
-**Always review remote scripts before running.**
-
+PowerShell Core required on non-Windows platforms. **Always review remote
+scripts before running.**
 
 Option B: Manual Installation
 
