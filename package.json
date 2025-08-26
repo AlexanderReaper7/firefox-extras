@@ -16,7 +16,12 @@
     "format:check": "prettier --check .",
     "clean": "rm -f chrome/findbar.css chrome/findbar.css.map",
     "validate": "npm run lint && npm run format:check && npm run build",
-    "prepare": "npm run validate"
+    "prepare": "npm run validate",
+    "deploy": "node scripts/deploy.js",
+    "deploy:local": "node scripts/deploy.js --local",
+    "deploy:ps1": "pwsh scripts/deploy.ps1",
+    "deploy:ps1:local": "pwsh scripts/deploy.ps1 -Local",
+    "test:deploy": "node scripts/test-deploy.js"
   },
   "devDependencies": {
     "sass": "^1.77.0",
