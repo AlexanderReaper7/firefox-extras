@@ -88,20 +88,20 @@
 
     <script>
       // Load SCSS content from the source file
-    async function loadScssContent() {
-      try {
-        const response = await fetch('../src/findbar.scss');
-        const scss = await response.text();
-        document.getElementById('scss').value = scss;
-      } catch (error) {
-        console.error('Failed to load SCSS content:', error);
-        // Fallback content if file cannot be loaded
+      async function loadScssContent() {
+        try {
+          const response = await fetch('../src/findbar.scss');
+          const scss = await response.text();
+          document.getElementById('scss').value = scss;
+        } catch (error) {
+          console.error('Failed to load SCSS content:', error);
+          // Fallback content if file cannot be loaded
           document.getElementById('scss').value = '/* Error loading SCSS content */';
+        }
       }
-    }
-    
-    // Load the content when the page loads
-    loadScssContent();
+
+      // Load the content when the page loads
+      loadScssContent();
 
       // Copy SCSS to clipboard
       document.getElementById('copy').addEventListener('click', async () => {

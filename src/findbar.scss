@@ -40,15 +40,12 @@
       DESCRIPTION,
     ),
 
-    /* NEW: positioning and layout */
-    $fixed: false,
+    /* NEW: positioning and layout */ $fixed: false,
     $centered: false,
 
-    /* NEW: scaling */
-    $scale: 1,
+    /* NEW: scaling */ $scale: 1,
 
-    /* NEW: symmetric left/right margin (defaults to $float-distance) */
-    $side-margin: null
+    /* NEW: symmetric left/right margin (defaults to $float-distance) */ $side-margin: null
   )
   /* sig:end */ {
   @namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
@@ -154,14 +151,26 @@
   // MARK: Animation
 
   @keyframes refined-findbar-scale-in {
-    0% { transform: scaleY(0); }
-    100% { transform: scaleY(1); }
+    0% {
+      transform: scaleY(0);
+    }
+    100% {
+      transform: scaleY(1);
+    }
   }
 
   @keyframes refined-findbar-scale-out {
-    0% { transform: scaleY(1); visibility: visible; }
-    99% { transform: scaleY(0); visibility: visible; }
-    100% { transform: scaleY(0); }
+    0% {
+      transform: scaleY(1);
+      visibility: visible;
+    }
+    99% {
+      transform: scaleY(0);
+      visibility: visible;
+    }
+    100% {
+      transform: scaleY(0);
+    }
   }
 
   findbar {
@@ -177,9 +186,16 @@
 
   @if ($hide-when-unfocused) {
     @keyframes refined-findbar-hide-when-unfocused {
-      0% { opacity: 1; height: auto; }
-      99% { opacity: 1; height: auto; }
-      100% {}
+      0% {
+        opacity: 1;
+        height: auto;
+      }
+      99% {
+        opacity: 1;
+        height: auto;
+      }
+      100% {
+      }
     }
 
     findbar:not(:focus-within) {
@@ -281,7 +297,9 @@
         outline-offset: var(--focus-outline-inset);
       }
 
-      .checkbox-check { display: none; }
+      .checkbox-check {
+        display: none;
+      }
 
       @if $buttons-grouped {
         &:not(#{map.get($-checkbox-selectors, $last-checkbox)}) {
