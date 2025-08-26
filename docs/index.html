@@ -87,39 +87,21 @@
     </div>
 
     <script>
-      const scss = `@use "./refined-findbar" as *;
-
-// prettier-ignore
-@include refined-findbar(
-  $float: true,
-  $float-alignment: top,
-  $float-distance: 18px,
-
-  $buttons: true,
-  $buttons-grouped: true,
-
-  $hide-close-button: false,
-  $hide-when-unfocused: false,
-  $opacity-when-unfocused: 1,
-
-  $order: (
-    TEXT_BOX,
-    CHECKBOX_HIGHLIGHT_ALL,
-    CHECKBOX_MATCH_CASE,
-    CHECKBOX_MATCH_DIACRITICS,
-    CHECKBOX_WHOLE_WORDS,
-    LABELS,
-    DESCRIPTION,
-  ),
-
-  // Extended options
-  $fixed: true,
-  $centered: true,
-  $scale: 1.5,
-  $side-margin: null
-);
-`;
-      document.getElementById('scss').value = scss;
+      // Load SCSS content from the source file
+    async function loadScssContent() {
+      try {
+        const response = await fetch('../src/findbar.scss');
+        const scss = await response.text();
+        document.getElementById('scss').value = scss;
+      } catch (error) {
+        console.error('Failed to load SCSS content:', error);
+        // Fallback content if file cannot be loaded
+          document.getElementById('scss').value = '/* Error loading SCSS content */';
+      }
+    }
+    
+    // Load the content when the page loads
+    loadScssContent();
 
       // Copy SCSS to clipboard
       document.getElementById('copy').addEventListener('click', async () => {
