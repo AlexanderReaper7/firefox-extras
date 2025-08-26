@@ -9,7 +9,7 @@ findbar:
 - CI builds compiled CSS and attaches it to GitHub Releases (not committed to
   source)
 
-Attribution
+## Attribution
 
 - Based on and inspired by: https://github.com/ravindUwU/firefox-refined-findbar
 
