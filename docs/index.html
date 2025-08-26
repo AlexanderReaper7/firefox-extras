@@ -607,12 +607,6 @@
     <!-- Features Section -->
     <section id="features" class="section">
       <div class="container">
-        <h2>Why Choose Firefox Refined Findbar?</h2>
-        <p>
-          Transform your Firefox search experience with a modern, fully customizable findbar that adapts to your
-          workflow.
-        </p>
-
         <div class="features">
           <div class="feature fade-in-up">
             <div class="feature-icon">🎯</div>
@@ -720,7 +714,7 @@
     <section id="install" class="section">
       <div class="container">
         <h2>Installation Guide</h2>
-        <p>Choose your preferred installation method. All methods will configure Firefox automatically.</p>
+        <p>Choose your preferred installation method.</p>
 
         <div class="installation">
           <h3>📦 Installation Methods</h3>
@@ -731,9 +725,7 @@
                 <li>Open PowerShell (Windows) or Terminal (macOS/Linux)</li>
                 <li>Run the installation command:</li>
               </ol>
-              <div class="code-block">
-                iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex
-              </div>
+              <div class="code-block">iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex</div>
               <p>
                 <small
                   >⚠️ Always review remote scripts before running. Requires PowerShell Core on non-Windows
@@ -779,6 +771,7 @@
         <div class="installation">
           <h3>⚙️ Configuration Options</h3>
           <p>The findbar can be customized using SCSS variables:</p>
+          <code>
           <ul>
             <li><strong>$float:</strong> Enable floating/overlay mode</li>
             <li><strong>$float-alignment:</strong> Position (top, bottom)</li>
@@ -794,6 +787,7 @@
             <li><strong>$side-margin:</strong> Custom side margins (null = auto)</li>
             <li><strong>$order:</strong> Customize the order of findbar elements</li>
           </ul>
+        </code>
         </div>
       </div>
     </section>
@@ -805,6 +799,10 @@
           <div class="footer-section">
             <h4>Project</h4>
             <ul>
+              <li>
+                <a href="https://github.com/AlexanderReaper7/firefox-extras/blob/main/README.md" target="_blank"
+                  rel="noopener">README</a>
+              </li>
               <li>
                 <a href="https://github.com/AlexanderReaper7/firefox-extras" target="_blank" rel="noopener"
                   >Source Code</a
@@ -832,23 +830,6 @@
           </div>
 
           <div class="footer-section">
-            <h4>Documentation</h4>
-            <ul>
-              <li>
-                <a
-                  href="https://github.com/AlexanderReaper7/firefox-extras/blob/main/README.md"
-                  target="_blank"
-                  rel="noopener"
-                  >README</a
-                >
-              </li>
-              <li><a href="#playground">SCSS Playground</a></li>
-              <li><a href="#install">Installation Guide</a></li>
-              <li><a href="https://sass-lang.com/playground/" target="_blank" rel="noopener">Sass Playground</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-section">
             <h4>Attribution</h4>
             <ul>
               <li>
@@ -871,7 +852,7 @@
 
         <div class="footer-bottom">
           <p>
-            &copy; 2024 Firefox Extras. Licensed under MIT. Based on and inspired by
+            Licensed under MIT. Based on and inspired by
             <a href="https://github.com/ravindUwU/firefox-refined-findbar" target="_blank" rel="noopener"
               >ravindUwU/firefox-refined-findbar</a
             >.
@@ -928,7 +909,7 @@
  * - Edit the options below to customize the findbar appearance
  * - Run \`npm run build\` to compile to CSS
  * - Copy the generated chrome/ folder to your Firefox profile
- * 
+ *
  * @see chrome/userChrome.css for the Firefox integration
 */
 
