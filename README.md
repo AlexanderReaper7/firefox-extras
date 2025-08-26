@@ -17,7 +17,25 @@ Attribution
 
 ## Install
 
-Option A: Download from Releases (recommended)
+Option A: Quick Install (Recommended)
+
+To install automatically via PowerShell (no manual downloads needed), run:
+PowerShell
+
+iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex
+
+    No dependencies: Only PowerShell required (Windows PowerShell or PowerShell Core on macOS/Linux)
+    What it does:
+        Finds your active Firefox profile
+        Downloads and installs the latest release
+        Configures required preferences
+        No manual steps or zip file handling
+
+    PowerShell Core required on non-Windows platforms.
+    Always review remote scripts before running.
+
+
+Option B: Manual Installation
 
 1. Go to Releases and download:
    - `firefox-chrome.zip` (contains `chrome/userChrome.css` and compiled
@@ -35,7 +53,7 @@ Option B: Build locally
    git)
 3. Copy the `chrome/` folder into your Firefox profile and restart Firefox.
 
-Option C: Automated deployment (recommended)
+Option C: Automated deployment
 
 **Node.js version (cross-platform):**
 
@@ -44,7 +62,7 @@ Option C: Automated deployment (recommended)
    - Or `npm run deploy v1.0.0` to install a specific version
    - Or `npm run deploy:local` to install from local build
 
-**PowerShell version (no dependencies required):**
+**PowerShell version:**
 
 1. `pwsh scripts/deploy.ps1` (downloads latest release and installs
    automatically)
