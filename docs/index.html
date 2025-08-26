@@ -390,6 +390,21 @@
         font-size: 0.9rem;
         margin: 0.5rem 0;
         overflow-x: auto;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+      }
+
+      /* Responsive text wrapping for long configuration names */
+      @media (max-width: 768px) {
+        .method li {
+          word-wrap: break-word;
+          overflow-wrap: break-word;
+        }
+
+        .code-block {
+          font-size: 0.8rem;
+          word-break: break-all;
+        }
       }
 
       /* Footer */
@@ -514,6 +529,21 @@
         background: rgba(255, 193, 7, 0.1);
         color: var(--warning);
         border: 1px solid rgba(255, 193, 7, 0.2);
+      }
+
+      .status-error {
+        background: rgba(220, 53, 69, 0.15);
+        color: var(--danger);
+        border: 1px solid rgba(220, 53, 69, 0.3);
+        font-weight: 600;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .status-error {
+          background: rgba(255, 107, 107, 0.2);
+          color: #ff6b6b;
+          border: 1px solid rgba(255, 107, 107, 0.4);
+        }
       }
 
       /* Scroll behavior */
@@ -646,8 +676,8 @@
       <div class="container">
         <h2>SCSS Playground</h2>
         <p>
-          Customize your findbar in real-time. Edit the SCSS configuration below and generate a link to the Sass
-          Playground to see your changes live.
+          Customize your findbar configuration. Edit the SCSS code below and use the Sass Playground to compile and test
+          your changes.
         </p>
 
         <div class="playground">
@@ -661,10 +691,11 @@
 
           <div class="playground-content">
             <div class="playground-description">
-              <strong>💡 How to use:</strong>
-              1) Edit the SCSS below to customize your findbar 2) Click "Generate Playground Link" to open Sass
-              Playground with your config 3) Copy the generated CSS and save it as <code>chrome/findbar.css</code> in
-              your Firefox profile 4) Restart Firefox to see your changes
+              <strong>💡 How to use:</strong><br />
+              1) Edit the SCSS below to customize your findbar<br />
+              2) Click "Customize and Compile in SASS Playground" to open Sass Playground with your config<br />
+              3) Copy the generated CSS and save it as <code>chrome/findbar.css</code> in your Firefox profile<br />
+              4) Restart Firefox to see your changes
             </div>
 
             <div class="code-container">
@@ -678,10 +709,7 @@
 
             <div class="code-actions">
               <button id="copy" class="btn btn-outline">📋 Copy SCSS</button>
-              <button id="generateLink" class="btn btn-primary">🚀 Generate Playground Link</button>
-              <a href="https://sass-lang.com/playground/" target="_blank" rel="noopener" class="btn btn-secondary">
-                🌐 Open Sass Playground
-              </a>
+              <button id="generateLink" class="btn btn-primary">🎨 Customize and Compile in SASS Playground</button>
             </div>
           </div>
         </div>
@@ -753,12 +781,18 @@
           <p>The findbar can be customized using SCSS variables:</p>
           <ul>
             <li><strong>$float:</strong> Enable floating/overlay mode</li>
+            <li><strong>$float-alignment:</strong> Position (top, bottom)</li>
+            <li><strong>$float-distance:</strong> Distance from viewport edge</li>
+            <li><strong>$buttons:</strong> Show prev/next navigation buttons</li>
+            <li><strong>$buttons-grouped:</strong> Group buttons visually with text box</li>
+            <li><strong>$hide-close-button:</strong> Show/hide the close button</li>
+            <li><strong>$hide-when-unfocused:</strong> Auto-hide when not in use</li>
+            <li><strong>$opacity-when-unfocused:</strong> Transparency when not focused (0-1)</li>
             <li><strong>$fixed:</strong> Use fixed positioning (stays in viewport)</li>
             <li><strong>$centered:</strong> Center horizontally on the page</li>
             <li><strong>$scale:</strong> Scale factor for size (1.0 = default, 1.5 = 150%)</li>
-            <li><strong>$float-alignment:</strong> Position (top, bottom)</li>
-            <li><strong>$buttons-grouped:</strong> Group buttons visually with text box</li>
-            <li><strong>$hide-close-button:</strong> Show/hide the close button</li>
+            <li><strong>$side-margin:</strong> Custom side margins (null = auto)</li>
+            <li><strong>$order:</strong> Customize the order of findbar elements</li>
           </ul>
         </div>
       </div>
@@ -858,7 +892,7 @@
         };
 
         status.innerHTML = `<span>${icons[type]}</span><span>${text}</span>`;
-        status.className = `status status-${type === 'error' ? 'loading' : 'success'}`;
+        status.className = `status status-${type}`;
       }
 
       // Load SCSS content from the source file
@@ -883,24 +917,417 @@
           console.error('Failed to load SCSS content:', error);
           updateStatus('Failed to load SCSS', 'error');
 
-          // Fallback content
-          document.getElementById('scss').value = `/* Failed to load SCSS content from ../src/findbar.scss
- * Error: ${error.message}
- * 
- * Please visit the GitHub repository to view the source:
- * https://github.com/AlexanderReaper7/firefox-extras/blob/main/src/findbar.scss
- */
+          // Fallback content with actual SCSS from the source
+          document.getElementById('scss').value = `/* Refined findbar for Firefox
+   Extended with fixed/centered placement, scaling, and side margins.
+   Attribution: Based on and inspired by https://github.com/ravindUwU/firefox-refined-findbar
 
-// Example configuration:
+   The customization options are at the bottom of this document.
+
+ * Usage:
+ * - Edit the options below to customize the findbar appearance
+ * - Run \`npm run build\` to compile to CSS
+ * - Copy the generated chrome/ folder to your Firefox profile
+ * 
+ * @see chrome/userChrome.css for the Firefox integration
+*/
+
+@use 'sass:list';
+@use 'sass:math';
+@use 'sass:map';
+
+@mixin /* sig:start */
+  refined-findbar(
+    $float: true,
+    $float-alignment: bottom,
+    $float-distance: 18px,
+
+    $buttons: true,
+    $buttons-grouped: true,
+
+    $hide-close-button: false,
+    $hide-when-unfocused: false,
+    $opacity-when-unfocused: 1,
+
+    $order: (
+      TEXT_BOX,
+      CHECKBOX_HIGHLIGHT_ALL,
+      CHECKBOX_MATCH_CASE,
+      CHECKBOX_MATCH_DIACRITICS,
+      CHECKBOX_WHOLE_WORDS,
+      LABELS,
+      DESCRIPTION,
+    ),
+
+    /* NEW: positioning and layout */ $fixed: false,
+    $centered: false,
+
+    /* NEW: scaling */ $scale: 1,
+
+    /* NEW: symmetric left/right margin (defaults to $float-distance) */ $side-margin: null
+  )
+  /* sig:end */ {
+  @namespace url('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul');
+  @namespace htmlNs url('http://www.w3.org/1999/xhtml');
+
+  /* Derived sizing based on scale */
+  $space: $-space * $scale;
+  $pad-all: 6px * $scale;
+  $border-w: 1px * $scale;
+  $check-pad-y: 3px * $scale;
+  $check-pad-x: 6px * $scale;
+
+  /* Resolve side margin default */
+  $lr-margin: if($side-margin == null, $float-distance, $side-margin);
+
+  // MARK: Position
+
+  findbar {
+    contain: content;
+
+    /* Scale text and inherited sizes */
+    @if ($scale != 1) {
+      font-size: #{math.percentage($scale)};
+    }
+
+    /* The findbar sits in a relatively positioned vbox.browserContainer.
+       We absolutely position within it by default; optionally switch to fixed. */
+    position: if($fixed, fixed, absolute);
+
+    @if $float {
+      /* Vertical offset */
+      #{$float-alignment}: $float-distance;
+
+      @if $centered {
+        /* center horizontally with equal margins from both sides */
+        left: $lr-margin;
+        right: $lr-margin;
+        margin-inline: auto;
+        width: max-content;
+        @if $fixed {
+          max-width: calc(100vw - #{2 * $lr-margin});
+        } @else {
+          max-width: calc(100% - #{2 * $lr-margin});
+        }
+        z-index: 9999;
+      } @else {
+        right: $float-distance;
+      }
+    } @else {
+      /* Docked mode: merge into top chrome by -1px */
+      top: -1px;
+      right: 44px;
+    }
+  }
+
+  // MARK: Children
+
+  findbar {
+    gap: $space;
+    padding: $pad-all;
+    padding-inline-start: $space;
+    padding-inline-end: $space;
+
+    & > * {
+      margin-inline-start: 0 !important;
+      margin-inline-end: 0 !important;
+    }
+
+    .findbar-container {
+      gap: $space;
+
+      & > * {
+        margin-inline-start: 0 !important;
+        margin-inline-end: 0 !important;
+      }
+    }
+
+    description.findbar-label:empty {
+      display: none;
+    }
+
+    @if ($hide-close-button) {
+      toolbarbutton.findbar-closebutton {
+        display: none;
+      }
+    }
+  }
+
+  // MARK: Border
+
+  findbar {
+    border: #{$border-w} solid var(--chrome-content-separator-color);
+
+    @if $float {
+      border-radius: var(--toolbarbutton-border-radius);
+    } @else {
+      border-bottom-left-radius: var(--toolbarbutton-border-radius);
+      border-bottom-right-radius: var(--toolbarbutton-border-radius);
+      border-top-width: 0 !important;
+    }
+  }
+
+  // MARK: Animation
+
+  @keyframes refined-findbar-scale-in {
+    0% {
+      transform: scaleY(0);
+    }
+    100% {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes refined-findbar-scale-out {
+    0% {
+      transform: scaleY(1);
+      visibility: visible;
+    }
+    99% {
+      transform: scaleY(0);
+      visibility: visible;
+    }
+    100% {
+      transform: scaleY(0);
+    }
+  }
+
+  findbar {
+    transform-origin: if($float, $float-alignment, top) center;
+    animation: refined-findbar-scale-in 0.1s;
+
+    &[hidden='true'] {
+      animation: refined-findbar-scale-out 0.1s;
+    }
+  }
+
+  // MARK: Hide when unfocused
+
+  @if ($hide-when-unfocused) {
+    @keyframes refined-findbar-hide-when-unfocused {
+      0% {
+        opacity: 1;
+        height: auto;
+      }
+      99% {
+        opacity: 1;
+        height: auto;
+      }
+      100% {
+      }
+    }
+
+    findbar:not(:focus-within) {
+      animation:
+        refined-findbar-scale-out 0.1s,
+        refined-findbar-hide-when-unfocused 0.1s;
+      height: 0;
+      opacity: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+  }
+
+  // MARK: Opacity when unfocused
+
+  @if ($opacity-when-unfocused < 1) {
+    findbar {
+      transition: opacity 0.1s;
+      opacity: 1;
+
+      &:not(:focus-within) {
+        opacity: $opacity-when-unfocused;
+      }
+    }
+  }
+
+  // MARK: Text box
+
+  findbar [anonid='findbar-textbox-wrapper'] {
+    htmlNs|input {
+      border: #{$border-w} solid ThreeDShadow;
+
+      @if $buttons and $buttons-grouped {
+        &:not(.minimal) {
+          border-top-right-radius: 0 !important;
+          border-bottom-right-radius: 0 !important;
+        }
+      }
+    }
+
+    /* Prev & next buttons (hidden in quick find mode) */
+    toolbarbutton {
+      color: var(--button-color);
+      background-color: #{-var(button-background-color, button-bgcolor)};
+      border: #{$border-w} solid ThreeDShadow;
+      margin-inline: 0 !important;
+
+      @if $buttons and $buttons-grouped {
+        &:last-of-type {
+          border-top-left-radius: 0 !important;
+          border-bottom-left-radius: 0 !important;
+        }
+        &:not(:last-of-type) {
+          border-radius: 0 !important;
+          border-right-width: 0 !important;
+        }
+      }
+    }
+  }
+
+  // MARK: Checkboxes
+
+  $checkbox-by-index: ();
+  @each $name in map.keys($-checkbox-selectors) {
+    $checkbox-by-index: map.set($checkbox-by-index, list.index($order, $name), $name);
+  }
+  $first-checkbox: map.get($checkbox-by-index, math.min(map.keys($checkbox-by-index)...));
+  $last-checkbox: map.get($checkbox-by-index, math.max(map.keys($checkbox-by-index)...));
+
+  findbar checkbox {
+    @if $buttons {
+      padding: $check-pad-y $check-pad-x;
+      border: #{$border-w} solid ThreeDShadow;
+      border-radius: var(--toolbarbutton-border-radius);
+      color: var(--button-color);
+      background-color: #{-var(button-background-color, button-bgcolor)};
+
+      &:hover {
+        background-color: #{-var(button-background-color-hover, button-hover-bgcolor)};
+      }
+      &:active {
+        background-color: #{-var(button-background-color-active, button-active-bgcolor)};
+      }
+
+      &[checked='true'] {
+        color: #{-var(button-text-color-primary, button-primary-color)};
+        background-color: #{-var(color-accent-primary, button-primary-bgcolor)};
+
+        &:hover {
+          background-color: #{-var(color-accent-primary-hover, button-primary-hover-bgcolor)};
+        }
+        &:active {
+          background-color: #{-var(color-accent-primary-active, button-primary-active-bgcolor)};
+        }
+      }
+
+      &:focus-visible {
+        outline: var(--focus-outline);
+        outline-offset: var(--focus-outline-inset);
+      }
+
+      .checkbox-check {
+        display: none;
+      }
+
+      @if $buttons-grouped {
+        &:not(#{map.get($-checkbox-selectors, $last-checkbox)}) {
+          border-top-right-radius: 0;
+          border-bottom-right-radius: 0;
+        }
+        &:not(#{map.get($-checkbox-selectors, $first-checkbox)}) {
+          border-top-left-radius: 0;
+          border-bottom-left-radius: 0;
+          border-left-width: 0;
+          margin-inline-start: -$space !important;
+        }
+      } @else {
+        &:not(#{map.get($-checkbox-selectors, $first-checkbox)}) {
+          margin-inline-start: -1 * math.div($space, 2) !important;
+        }
+      }
+    } @else {
+      &:is(#{map.get($-checkbox-selectors, $first-checkbox)}) {
+        margin-inline-start: math.div($space, 2) !important;
+      }
+      &:is(#{map.get($-checkbox-selectors, $last-checkbox)}) {
+        margin-inline-end: math.div($space, 2) !important;
+      }
+    }
+  }
+
+  // MARK: Order
+
+  findbar {
+    [anonid='findbar-textbox-wrapper'] {
+      order: list.index($order, TEXT_BOX) - 1;
+    }
+
+    @each $name, $selector in $-checkbox-selectors {
+      #{$selector} {
+        order: list.index($order, $name) - 1;
+      }
+    }
+
+    label.findbar-label {
+      order: list.index($order, LABELS) - 1;
+    }
+
+    description.findbar-label {
+      order: list.index($order, DESCRIPTION) - 1;
+    }
+  }
+}
+
+$-space: 8px;
+
+/* Checkbox selectors mapping */
+$-checkbox-selectors: (
+  CHECKBOX_HIGHLIGHT_ALL: "checkbox[anonid='highlight']",
+  CHECKBOX_MATCH_CASE: "checkbox[anonid='find-case-sensitive']",
+  CHECKBOX_MATCH_DIACRITICS: "checkbox[anonid='find-match-diacritics']",
+  CHECKBOX_WHOLE_WORDS: "checkbox[anonid='find-entire-word']",
+);
+
+/* var() helper with fallbacks */
+@function -var($names...) {
+  $css: '';
+  @for $i from list.length($names) through 1 {
+    @if $css == '' {
+      $css: 'var(--' + list.nth($names, $i) + ')';
+    } @else {
+      $css: 'var(--' + list.nth($names, $i) + ', ' + $css + ')';
+    }
+  }
+  @return $css;
+}
+
+/**
+ * Configure the findbar with custom options here.
+ */
+// prettier-ignore
 @include refined-findbar(
-  $float: true,
-  $fixed: true,
-  $centered: true,
-  $scale: 1.5,
-  $float-alignment: top,
-  $float-distance: 18px,
-  $buttons: true,
-  $buttons-grouped: true
+  // === Positioning Options ===
+  $float: true,                     // Enable floating/overlay mode
+  $float-alignment: top,            // Position at top of viewport
+  $float-distance: 18px,            // Distance from viewport edge
+
+  // === Button Configuration ===
+  $buttons: true,                   // Show prev/next navigation buttons
+  $buttons-grouped: true,           // Group buttons visually with text box
+
+  // === Visibility Options ===
+  $hide-close-button: false,        // Show/hide the close button
+  $hide-when-unfocused: false,      // Auto-hide when not in use
+  $opacity-when-unfocused: 1,       // Transparency when not focused (0-1)
+
+  // === Element Order ===
+  // Customize the order of findbar elements
+  $order: (
+    TEXT_BOX,                       // Search input field
+    CHECKBOX_HIGHLIGHT_ALL,         // Highlight all matches option
+    CHECKBOX_MATCH_CASE,            // Case-sensitive search option
+    CHECKBOX_MATCH_DIACRITICS,      // Match diacritics option
+    CHECKBOX_WHOLE_WORDS,           // Whole words only option
+    LABELS,                         // Status labels (e.g., "1 of 5")
+    DESCRIPTION,                    // Additional descriptions
+  ),
+
+  // === Extended Layout Options ===
+  $fixed: true,                     // Use fixed positioning (stays in viewport)
+  $centered: true,                  // Center horizontally on the page
+  $scale: 1.5,                      // Scale factor for size (1.0 = default)
+  $side-margin: null                // Custom side margins (null = auto)
 );`;
         }
       }
@@ -1019,7 +1446,7 @@
             document.body.removeChild(temp);
           }
 
-          button.textContent = '✅ URL Copied!';
+          button.textContent = '✅ Opening Playground!';
 
           // Also open the playground in a new tab
           window.open(playgroundUrl, '_blank', 'noopener,noreferrer');
