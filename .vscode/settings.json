@@ -1,0 +1,80 @@
+{
+  // General editor settings for better Copilot experience
+  "editor.inlineSuggest.enabled": true,
+  "editor.suggestSelection": "first",
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.tabCompletion": "on",
+  "editor.wordBasedSuggestions": "matchingDocuments",
+  
+  // GitHub Copilot specific settings
+  "github.copilot.enable": {
+    "*": true,
+    "yaml": true,
+    "plaintext": true,
+    "markdown": true,
+    "scss": true,
+    "css": true,
+    "json": true
+  },
+  "github.copilot.advanced": {
+    "length": 500,
+    "temperature": 0.1
+  },
+  
+  // SCSS/CSS specific settings
+  "scss.validate": true,
+  "scss.lint.unknownAtRules": "ignore",
+  "css.validate": true,
+  "css.lint.unknownAtRules": "ignore",
+  
+  // File associations for better syntax highlighting
+  "files.associations": {
+    "*.scss": "scss",
+    "*.css": "css"
+  },
+  
+  // Auto-formatting on save
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true,
+  
+  // Default formatters
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  
+  // Emmet for better CSS/SCSS development
+  "emmet.includeLanguages": {
+    "scss": "css"
+  },
+  
+  // Workspace-specific settings
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/chrome/findbar.css": true,
+    "**/*.css.map": true
+  },
+  
+  // Terminal settings
+  "terminal.integrated.defaultProfile.linux": "bash",
+  
+  // Git settings
+  "git.autofetch": true,
+  "git.enableSmartCommit": true,
+  
+  // Explorer settings
+  "explorer.sortOrder": "type",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.scss": "${capture}.css, ${capture}.css.map"
+  }
+}
