@@ -19,6 +19,8 @@
     "prepare": "npm run validate",
     "deploy": "node scripts/deploy.js",
     "deploy:local": "node scripts/deploy.js --local",
+    "deploy:ps1": "pwsh scripts/deploy.ps1",
+    "deploy:ps1:local": "pwsh scripts/deploy.ps1 -Local",
     "test:deploy": "node scripts/test-deploy.js"
   },
   "devDependencies": {
@@ -28,8 +30,5 @@
     "stylelint-config-standard-scss": "^6.1.0",
     "stylelint-scss": "^4.7.0",
     "prettier": "^3.1.0"
-  },
-  "dependencies": {
-    "yauzl": "^3.0.0"
   }
 }

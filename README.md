@@ -37,10 +37,20 @@ Option B: Build locally
 
 Option C: Automated deployment (recommended)
 
+**Node.js version (cross-platform):**
+
 1. `npm install`
 2. `npm run deploy` (downloads latest release and installs automatically)
    - Or `npm run deploy v1.0.0` to install a specific version
    - Or `npm run deploy:local` to install from local build
+
+**PowerShell version (no dependencies required):**
+
+1. `pwsh scripts/deploy.ps1` (downloads latest release and installs
+   automatically)
+   - Or `pwsh scripts/deploy.ps1 -Version v1.0.0` to install a specific version
+   - Or `pwsh scripts/deploy.ps1 -Local` to install from local build
+   - Or use npm: `npm run deploy:ps1` / `npm run deploy:ps1:local`
 
 The deployment command will:
 
@@ -49,6 +59,9 @@ The deployment command will:
 - Install the chrome folder to your profile
 - Configure Firefox preferences
 - No manual steps required!
+
+**Supported platforms:** Windows, macOS, Linux  
+**PowerShell version:** Requires PowerShell Core on non-Windows platforms
 
 ---
 

@@ -15,7 +15,7 @@ const fs = require('fs');
 const path = require('path');
 const os = require('os');
 const https = require('https');
-const yauzl = require('yauzl');
+const { execSync } = require('child_process');
 
 // Configuration
 const REPO_OWNER = 'AlexanderReaper7';
@@ -77,45 +77,27 @@ function downloadFile(url, outputPath) {
 }
 
 /**
- * Extract zip file
+ * Extract zip file using system commands
  */
 function extractZip(zipPath, outputDir) {
   return new Promise((resolve, reject) => {
-    yauzl.open(zipPath, { lazyEntries: true }, (err, zipfile) => {
-      if (err) return reject(err);
+    try {
+      const platform = os.platform();
+      let command;
 
-      zipfile.readEntry();
-      zipfile.on('entry', entry => {
-        const outputPath = path.join(outputDir, entry.fileName);
+      if (platform === 'win32') {
+        // Use PowerShell on Windows
+        command = `powershell -Command "Expand-Archive -Path '${zipPath}' -DestinationPath '${outputDir}' -Force"`;
+      } else {
+        // Use unzip on Unix-like systems (macOS, Linux)
+        command = `unzip -o "${zipPath}" -d "${outputDir}"`;
+      }
 
-        if (/\/$/.test(entry.fileName)) {
-          // Directory
-          fs.mkdirSync(outputPath, { recursive: true });
-          zipfile.readEntry();
-        } else {
-          // File
-          fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-          zipfile.openReadStream(entry, (err, readStream) => {
-            if (err) return reject(err);
-
-            const writeStream = fs.createWriteStream(outputPath);
-            readStream.pipe(writeStream);
-
-            writeStream.on('close', () => {
-              zipfile.readEntry();
-            });
-
-            writeStream.on('error', reject);
-          });
-        }
-      });
-
-      zipfile.on('end', () => {
-        resolve();
-      });
-
-      zipfile.on('error', reject);
-    });
+      execSync(command, { stdio: 'pipe' });
+      resolve();
+    } catch (error) {
+      reject(new Error(`Failed to extract zip: ${error.message}`));
+    }
   });
 }
 
@@ -361,6 +343,8 @@ Usage:
   npm run deploy                 Download and install latest release
   npm run deploy v1.0.0          Download and install specific version
   npm run deploy:local           Install from local build
+  npm run deploy:ps1             PowerShell version (latest release)
+  npm run deploy:ps1:local       PowerShell version (local build)
   npm run test:deploy            Test deployment functionality
 
 Options:
@@ -371,9 +355,10 @@ The deployment script will:
 - Download the latest release from GitHub (or use local build)
 - Extract and install the chrome folder
 - Configure Firefox preferences
-- No manual steps required!
+- No external dependencies required!
 
 Supported platforms: Windows, macOS, Linux
+PowerShell version: Requires PowerShell Core on non-Windows platforms
     `);
     process.exit(0);
   }

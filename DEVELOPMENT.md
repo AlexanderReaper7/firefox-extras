@@ -22,9 +22,19 @@ This project includes several npm scripts to help with development workflow:
 
 ## Deployment
 
+**Node.js version (cross-platform):**
+
 - `npm run deploy` - Download and install latest release to Firefox profile
 - `npm run deploy:local` - Install from local build to Firefox profile
 - `npm run test:deploy` - Test deployment functionality without installing
+
+**PowerShell version (no dependencies required):**
+
+- `npm run deploy:ps1` - PowerShell version (latest release)
+- `npm run deploy:ps1:local` - PowerShell version (local build)
+- Direct: `pwsh scripts/deploy.ps1` or `pwsh scripts/deploy.ps1 -Local`
+
+Both versions automatically detect Firefox profiles and configure preferences.
 
 ## Development Workflow
 
@@ -67,7 +77,7 @@ This project includes VS Code workspace settings that:
 ## Firefox Integration
 
 1. Build the CSS: `npm run build`
-2. Deploy automatically: `npm run deploy:local`
+2. Deploy automatically: `npm run deploy:local` or `npm run deploy:ps1:local`
    - Or manually copy the `chrome/` folder to your Firefox profile
    - And manually enable legacy stylesheets in `about:config`
 3. Restart Firefox
