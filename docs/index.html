@@ -1,53 +1,93 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>Firefox Refined Findbar – SCSS helper</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif; margin: 2rem; }
-    textarea { width: 100%; min-height: 320px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-size: 13px; }
-    code,kbd { background: #f6f8fa; padding: 0.1rem 0.25rem; border-radius: 4px; }
-    .row { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .row > * { flex: 1 1 320px; }
-    button { padding: .5rem .75rem; cursor: pointer; }
-    .hint { color: #666; font-size: 0.95em; }
-  </style>
-</head>
-<body>
-  <h1>Firefox Refined Findbar – SCSS helper</h1>
-  <p>
-    1) Click “Copy SCSS” → 2) Open <a href="https://sass-lang.com/playground/" target="_blank" rel="noreferrer">Sass Playground</a> → 3) Paste into SCSS pane → 4) Tweak options and copy generated CSS into <code>chrome/findbar.css</code>.
-  </p>
+  <head>
+    <meta charset="utf-8" />
+    <title>Firefox Refined Findbar – SCSS helper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body {
+        font:
+          14px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        margin: 2rem;
+      }
+      textarea {
+        width: 100%;
+        min-height: 320px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+        font-size: 13px;
+      }
+      code,
+      kbd {
+        background: #f6f8fa;
+        padding: 0.1rem 0.25rem;
+        border-radius: 4px;
+      }
+      .row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .row > * {
+        flex: 1 1 320px;
+      }
+      button {
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+      }
+      .hint {
+        color: #666;
+        font-size: 0.95em;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Firefox Refined Findbar – SCSS helper</h1>
+    <p>
+      1) Click “Copy SCSS” → 2) Open
+      <a href="https://sass-lang.com/playground/" target="_blank" rel="noreferrer">Sass Playground</a> → 3) Paste into
+      SCSS pane → 4) Tweak options and copy generated CSS into <code>chrome/findbar.css</code>.
+    </p>
 
-  <div class="row">
-    <div>
-      <h3>SCSS template</h3>
-      <p class="hint">The <code>@include</code> block is where you tweak.</p>
-      <textarea id="scss"></textarea>
-      <p>
-        <button id="copy">Copy SCSS</button>
-        <button id="generateLink">Generate Playground Link</button>
-        <a href="https://sass-lang.com/playground/" target="_blank" rel="noreferrer">
-          <button>Open Sass Playground</button>
-        </a>
-      </p>
+    <div class="row">
+      <div>
+        <h3>SCSS template</h3>
+        <p class="hint">The <code>@include</code> block is where you tweak.</p>
+        <textarea id="scss"></textarea>
+        <p>
+          <button id="copy">Copy SCSS</button>
+          <button id="generateLink">Generate Playground Link</button>
+          <a href="https://sass-lang.com/playground/" target="_blank" rel="noreferrer">
+            <button>Open Sass Playground</button>
+          </a>
+        </p>
+      </div>
+      <div>
+        <h3>Notes</h3>
+        <ul>
+          <li>Default options: fixed, centered, top, 150% scale, side margin = float distance.</li>
+          <li>
+            Save resulting CSS to <code>chrome/findbar.css</code>. Firefox loads
+            <code>chrome/userChrome.css</code> which imports it.
+          </li>
+          <li>Restart Firefox to apply changes.</li>
+        </ul>
+        <p class="hint">
+          Attribution: Based on and inspired by
+          <a href="https://github.com/ravindUwU/firefox-refined-findbar" target="_blank" rel="noreferrer"
+            >ravindUwU/firefox-refined-findbar</a
+          >.
+        </p>
+      </div>
     </div>
-    <div>
-      <h3>Notes</h3>
-      <ul>
-        <li>Default options: fixed, centered, top, 150% scale, side margin = float distance.</li>
-        <li>Save resulting CSS to <code>chrome/findbar.css</code>. Firefox loads <code>chrome/userChrome.css</code> which imports it.</li>
-        <li>Restart Firefox to apply changes.</li>
-      </ul>
-      <p class="hint">Attribution: Based on and inspired by
-        <a href="https://github.com/ravindUwU/firefox-refined-findbar" target="_blank" rel="noreferrer">ravindUwU/firefox-refined-findbar</a>.
-      </p>
-    </div>
-  </div>
 
-  <script>
-    const scss = `@use "./refined-findbar" as *;
+    <script>
+      const scss = `@use "./refined-findbar" as *;
 
 // prettier-ignore
 @include refined-findbar(
@@ -79,81 +119,82 @@
   $side-margin: null
 );
 `;
-    document.getElementById('scss').value = scss;
-    
-    // Copy SCSS to clipboard
-    document.getElementById('copy').addEventListener('click', async () => {
-      const el = document.getElementById('scss');
-      el.select();
-      el.setSelectionRange(0, el.value.length);
-      try { await navigator.clipboard.writeText(el.value); } catch {}
-    });
-    
-    // Generate Playground Link
-    document.getElementById('generateLink').addEventListener('click', async () => {
-      const scssContent = document.getElementById('scss').value;
-      
-      try {
-        // Implement compression similar to the reference implementation
-        async function deflateToBase64(input) {
-          const encoder = new TextEncoder();
-          const data = encoder.encode(input);
-          
-          // Use CompressionStream if available (modern browsers)
-          if ('CompressionStream' in window) {
-            const compressionStream = new CompressionStream('deflate');
-            const writer = compressionStream.writable.getWriter();
-            const reader = compressionStream.readable.getReader();
-            
-            writer.write(data);
-            writer.close();
-            
-            const chunks = [];
-            let done = false;
-            while (!done) {
-              const { value, done: readerDone } = await reader.read();
-              done = readerDone;
-              if (value) chunks.push(value);
+      document.getElementById('scss').value = scss;
+
+      // Copy SCSS to clipboard
+      document.getElementById('copy').addEventListener('click', async () => {
+        const el = document.getElementById('scss');
+        el.select();
+        el.setSelectionRange(0, el.value.length);
+        try {
+          await navigator.clipboard.writeText(el.value);
+        } catch {}
+      });
+
+      // Generate Playground Link
+      document.getElementById('generateLink').addEventListener('click', async () => {
+        const scssContent = document.getElementById('scss').value;
+
+        try {
+          // Implement compression similar to the reference implementation
+          async function deflateToBase64(input) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+
+            // Use CompressionStream if available (modern browsers)
+            if ('CompressionStream' in window) {
+              const compressionStream = new CompressionStream('deflate');
+              const writer = compressionStream.writable.getWriter();
+              const reader = compressionStream.readable.getReader();
+
+              writer.write(data);
+              writer.close();
+
+              const chunks = [];
+              let done = false;
+              while (!done) {
+                const { value, done: readerDone } = await reader.read();
+                done = readerDone;
+                if (value) chunks.push(value);
+              }
+
+              const compressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
+              let offset = 0;
+              for (const chunk of chunks) {
+                compressed.set(chunk, offset);
+                offset += chunk.length;
+              }
+
+              return btoa(String.fromCharCode(...compressed));
+            } else {
+              // Fallback: just use base64 without compression
+              return btoa(input);
             }
-            
-            const compressed = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
-            let offset = 0;
-            for (const chunk of chunks) {
-              compressed.set(chunk, offset);
-              offset += chunk.length;
-            }
-            
-            return btoa(String.fromCharCode(...compressed));
-          } else {
-            // Fallback: just use base64 without compression
-            return btoa(input);
           }
+
+          async function serializeStateContents(inputValue) {
+            // Format: inputFormat(scss=1) + outputFormat(expanded=1) + content
+            const persistedState = `11${inputValue}`;
+            return await deflateToBase64(persistedState);
+          }
+
+          const encodedContent = await serializeStateContents(scssContent);
+          const playgroundUrl = `https://sass-lang.com/playground/#${encodedContent}`;
+
+          // Copy URL to clipboard and provide feedback
+          await navigator.clipboard.writeText(playgroundUrl);
+          const originalText = document.getElementById('generateLink').textContent;
+          document.getElementById('generateLink').textContent = 'URL Copied!';
+
+          setTimeout(() => {
+            document.getElementById('generateLink').textContent = originalText;
+          }, 2000);
+        } catch (error) {
+          // Fallback: just open the playground
+          window.open('https://sass-lang.com/playground/', '_blank');
+          console.error('Failed to generate playground link:', error);
         }
-        
-        async function serializeStateContents(inputValue) {
-          // Format: inputFormat(scss=1) + outputFormat(expanded=1) + content
-          const persistedState = `11${inputValue}`;
-          return await deflateToBase64(persistedState);
-        }
-        
-        const encodedContent = await serializeStateContents(scssContent);
-        const playgroundUrl = `https://sass-lang.com/playground/#${encodedContent}`;
-        
-        // Copy URL to clipboard and provide feedback
-        await navigator.clipboard.writeText(playgroundUrl);
-        const originalText = document.getElementById('generateLink').textContent;
-        document.getElementById('generateLink').textContent = 'URL Copied!';
-        
-        setTimeout(() => {
-          document.getElementById('generateLink').textContent = originalText;
-        }, 2000);
-        
-      } catch (error) {
-        // Fallback: just open the playground
-        window.open('https://sass-lang.com/playground/', '_blank');
-        console.error('Failed to generate playground link:', error);
-      }
-    });
-  </script>
-</body>
+      });
+    </script>
+  </body>
 </html>

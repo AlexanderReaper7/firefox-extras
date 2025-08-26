@@ -1,0 +1,80 @@
+{
+  "extends": ["stylelint-config-standard-scss"],
+  "plugins": ["stylelint-scss"],
+  "rules": {
+    "indentation": null,
+    "max-line-length": null,
+    "string-quotes": "single",
+    "color-hex-case": "lower",
+    "color-hex-length": "short",
+    "declaration-colon-space-after": null,
+    "declaration-colon-space-before": null,
+    "function-comma-space-after": null,
+    "function-parentheses-space-inside": null,
+    "number-leading-zero": "always",
+    "number-no-trailing-zeros": true,
+    "length-zero-no-unit": true,
+
+    "at-rule-empty-line-before": null,
+    "no-eol-whitespace": null,
+
+    "scss/at-rule-no-unknown": true,
+    "scss/dollar-variable-pattern": null,
+    "scss/selector-no-redundant-nesting-selector": null,
+    "scss/at-import-partial-extension": "never",
+    "scss/at-rule-conditional-no-parentheses": null,
+
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "use",
+          "forward",
+          "include",
+          "mixin",
+          "function",
+          "if",
+          "else",
+          "each",
+          "for",
+          "while",
+          "return"
+        ]
+      }
+    ],
+
+    "property-no-unknown": [
+      true,
+      {
+        "ignoreProperties": ["-moz-appearance", "-webkit-appearance", "scrollbar-width", "scrollbar-color"]
+      }
+    ],
+
+    "property-no-vendor-prefix": null,
+    "value-no-vendor-prefix": null,
+    "value-keyword-case": null,
+    "no-duplicate-selectors": null,
+    "no-descending-specificity": null,
+    "declaration-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "scss/dollar-variable-empty-line-before": null,
+    "function-whitespace-after": null,
+    "declaration-block-single-line-max-declarations": null,
+    "block-no-empty": null,
+
+    "selector-pseudo-element-no-unknown": [
+      true,
+      {
+        "ignorePseudoElements": ["slider-thumb", "slider-track"]
+      }
+    ],
+
+    "selector-type-no-unknown": [
+      true,
+      {
+        "ignoreTypes": ["findbar", "toolbarbutton", "description", "checkbox", "htmlNs"]
+      }
+    ]
+  },
+  "ignoreFiles": ["node_modules/**/*", "chrome/findbar.css", "**/*.css.map"]
+}
