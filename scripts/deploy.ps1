@@ -77,7 +77,7 @@ function Write-Log {
         [string]$Level = "Info"
     )
     
-    $timestamp = Get-Date -Format "HH:mm:ss"
+    $timestamp = Get-Date -Format "HH:mm:ss.fff"
     $prefix = switch ($Level) {
         "Error" { "[ERROR]" }
         "Success" { "[SUCCESS]" }
