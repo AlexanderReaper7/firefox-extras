@@ -665,8 +665,6 @@
       </div>
     </section>
 
-
-
     <!-- Installation Section -->
     <section id="install" class="section">
       <div class="container">
@@ -682,7 +680,9 @@
                 <li>Open PowerShell (Windows) or Terminal (macOS/Linux)</li>
                 <li>Run the installation command:</li>
               </ol>
-              <div class="code-block">iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex</div>
+              <div class="code-block">
+                iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex
+              </div>
               <p>
                 <small
                   >⚠️ Always review remote scripts before running. Requires PowerShell Core on non-Windows
@@ -729,22 +729,22 @@
           <h3>⚙️ Configuration Options</h3>
           <p>The findbar can be customized using SCSS variables:</p>
           <code>
-          <ul>
-            <li><strong>$float:</strong> Enable floating/overlay mode</li>
-            <li><strong>$float-alignment:</strong> Position (top, bottom)</li>
-            <li><strong>$float-distance:</strong> Distance from viewport edge</li>
-            <li><strong>$buttons:</strong> Show prev/next navigation buttons</li>
-            <li><strong>$buttons-grouped:</strong> Group buttons visually with text box</li>
-            <li><strong>$hide-close-button:</strong> Show/hide the close button</li>
-            <li><strong>$hide-when-unfocused:</strong> Auto-hide when not in use</li>
-            <li><strong>$opacity-when-unfocused:</strong> Transparency when not focused (0-1)</li>
-            <li><strong>$fixed:</strong> Use fixed positioning (stays in viewport)</li>
-            <li><strong>$centered:</strong> Center horizontally on the page</li>
-            <li><strong>$scale:</strong> Scale factor for size (1.0 = default, 1.5 = 150%)</li>
-            <li><strong>$side-margin:</strong> Custom side margins (null = auto)</li>
-            <li><strong>$order:</strong> Customize the order of findbar elements</li>
-          </ul>
-        </code>
+            <ul>
+              <li><strong>$float:</strong> Enable floating/overlay mode</li>
+              <li><strong>$float-alignment:</strong> Position (top, bottom)</li>
+              <li><strong>$float-distance:</strong> Distance from viewport edge</li>
+              <li><strong>$buttons:</strong> Show prev/next navigation buttons</li>
+              <li><strong>$buttons-grouped:</strong> Group buttons visually with text box</li>
+              <li><strong>$hide-close-button:</strong> Show/hide the close button</li>
+              <li><strong>$hide-when-unfocused:</strong> Auto-hide when not in use</li>
+              <li><strong>$opacity-when-unfocused:</strong> Transparency when not focused (0-1)</li>
+              <li><strong>$fixed:</strong> Use fixed positioning (stays in viewport)</li>
+              <li><strong>$centered:</strong> Center horizontally on the page</li>
+              <li><strong>$scale:</strong> Scale factor for size (1.0 = default, 1.5 = 150%)</li>
+              <li><strong>$side-margin:</strong> Custom side margins (null = auto)</li>
+              <li><strong>$order:</strong> Customize the order of findbar elements</li>
+            </ul>
+          </code>
         </div>
       </div>
     </section>
@@ -757,8 +757,12 @@
             <h4>Project</h4>
             <ul>
               <li>
-                <a href="https://github.com/AlexanderReaper7/firefox-extras/blob/main/README.md" target="_blank"
-                  rel="noopener">README</a>
+                <a
+                  href="https://github.com/AlexanderReaper7/firefox-extras/blob/main/README.md"
+                  target="_blank"
+                  rel="noopener"
+                  >README</a
+                >
               </li>
               <li>
                 <a href="https://github.com/AlexanderReaper7/firefox-extras" target="_blank" rel="noopener"
