@@ -77,11 +77,11 @@ function Write-Log {
         [string]$Level = "Info"
     )
     
-    $timestamp = Get-Date -Format "yyyy-MM-ddTHH:mm:ss.fffZ"
+    $timestamp = Get-Date -Format "HH:mm:ss"
     $prefix = switch ($Level) {
-        "Error" { "❌" }
-        "Success" { "✅" }
-        default { "ℹ️" }
+        "Error" { "[ERROR]" }
+        "Success" { "[SUCCESS]" }
+        default { "[INFO]" }
     }
     
     Write-Host "$prefix [$timestamp] $Message"
@@ -116,7 +116,10 @@ function Find-ActiveFirefoxProfile {
     
     $profiles = Get-ChildItem $profilesDir -Directory | 
                 Where-Object { $_.Name -match '\.' -and -not $_.Name.StartsWith('.') } |
-                Sort-Object { if ($_.Name -match 'default') { 0 } else { 1 } }
+                Sort-Object @(
+                    @{Expression = "LastWriteTime"; Descending = $true},
+                    @{Expression = {if ($_.Name -match 'default') { 0 } else { 1 }}; Descending = $false}
+                )
     
     if ($profiles.Count -eq 0) {
         throw "No Firefox profiles found"
@@ -124,6 +127,7 @@ function Find-ActiveFirefoxProfile {
     
     if ($profiles.Count -gt 1) {
         Write-Log "Found multiple profiles: $($profiles.Name -join ', ')"
+        Write-Log "Most recently modified: $($profiles[0].Name) ($(Get-Date $profiles[0].LastWriteTime -Format 'yyyy-MM-dd HH:mm:ss'))"
         Write-Log "Using: $($profiles[0].Name)"
     }
     
