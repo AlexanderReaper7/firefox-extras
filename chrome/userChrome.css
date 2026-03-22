@@ -8,6 +8,6 @@
 @import url('./findbar.css');
 
 /* show bookmarks even in fullscreen mode */
-#navigator-toolbox[inFullscreen] toolbar:not([collapsed="true"]) {
-   visibility:visible!important;
+#PersonalToolbar:not([style*="pointer-events: none"]) {
+  visibility: visible !important;
 }
