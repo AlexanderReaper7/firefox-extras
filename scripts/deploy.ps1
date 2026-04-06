@@ -240,20 +240,25 @@ function Get-FirefoxInstallDirectory {
 
 # Deploy the vendored fx-autoconfig loader files
 function Deploy-Loader {
-    param([string]$ProfileDir)
+    param(
+        [string]$ProfileDir,
+        [string]$VendorDir = ""
+    )
 
-    $scriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
-    $repoRoot   = Split-Path $scriptDir -Parent
-    $vendorDir  = Join-Path $repoRoot "vendor\fx-autoconfig"
+    if (-not $VendorDir) {
+        $scriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
+        $repoRoot   = Split-Path $scriptDir -Parent
+        $VendorDir  = Join-Path $repoRoot "vendor\fx-autoconfig"
+    }
 
-    if (-not (Test-Path $vendorDir)) {
-        Write-Log "Vendor directory not found: $vendorDir" -Level "Error"
+    if (-not (Test-Path $VendorDir)) {
+        Write-Log "Vendor directory not found: $VendorDir" -Level "Error"
         Write-Log "The fx-autoconfig loader files should be in vendor/fx-autoconfig/"
         return
     }
 
     # --- Profile-side files (no elevation needed) ---
-    $srcUtils  = Join-Path $vendorDir "profile\chrome\utils"
+    $srcUtils  = Join-Path $VendorDir "profile\chrome\utils"
     $destUtils = Join-Path $ProfileDir "chrome\utils"
     New-Item $destUtils -ItemType Directory -Force | Out-Null
     Get-ChildItem $srcUtils -File | ForEach-Object {
@@ -271,13 +276,13 @@ function Deploy-Loader {
         $ffInstall = Get-FirefoxInstallDirectory
         Write-Log "Firefox install directory: $ffInstall"
 
-        $srcConfig = Join-Path $vendorDir "program\config.js"
+        $srcConfig = Join-Path $VendorDir "program\config.js"
         Copy-Item $srcConfig (Join-Path $ffInstall "config.js") -Force
         Write-Log "Deployed: config.js -> Firefox install dir"
 
         $prefDest = Join-Path $ffInstall "defaults\pref"
         New-Item $prefDest -ItemType Directory -Force | Out-Null
-        $srcPrefs = Join-Path $vendorDir "program\defaults\pref\config-prefs.js"
+        $srcPrefs = Join-Path $VendorDir "program\defaults\pref\config-prefs.js"
         Copy-Item $srcPrefs (Join-Path $prefDest "config-prefs.js") -Force
         Write-Log "Deployed: config-prefs.js -> Firefox install dir/defaults/pref/"
 
@@ -374,7 +379,7 @@ function Deploy-Release {
         Write-Log "Using Firefox profile: $profileDir"
         
         # Create temporary directory for download
-        $tempDir = Join-Path $env:TEMP "firefox-extras-$(Get-Random)"
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) "firefox-extras-$(Get-Random)"
         New-Item $tempDir -ItemType Directory -Force | Out-Null
         $zipPath = Join-Path $tempDir $ReleaseAssetName
         
@@ -383,10 +388,27 @@ function Deploy-Release {
             Write-Log "Downloading $($asset.name)..."
             Download-File $asset.browser_download_url $zipPath
             
-            # Extract to profile directory
-            Write-Log "Extracting files to Firefox profile..."
-            Expand-Archive $zipPath $profileDir -Force
+            # Extract to subdirectory so we can selectively copy files
+            $extractDir = Join-Path $tempDir "extracted"
+            New-Item $extractDir -ItemType Directory -Force | Out-Null
+            Write-Log "Extracting release files..."
+            Expand-Archive $zipPath $extractDir -Force
             Write-Log "Files extracted successfully"
+
+            # Copy chrome directory to Firefox profile
+            $srcChromeDir = Join-Path $extractDir "chrome"
+            $destChromeDir = Join-Path $profileDir "chrome"
+            if (Test-Path $srcChromeDir) {
+                New-Item $destChromeDir -ItemType Directory -Force | Out-Null
+                Copy-Item "$srcChromeDir\*" $destChromeDir -Recurse -Force
+                Write-Log "Chrome files installed to Firefox profile"
+            } else {
+                throw "chrome/ directory not found in release package"
+            }
+
+            # Deploy the fx-autoconfig JS loader from the extracted vendor directory
+            $extractedVendorDir = Join-Path $extractDir "vendor\fx-autoconfig"
+            Deploy-Loader $profileDir $extractedVendorDir
             
             # Update Firefox preferences
             Update-FirefoxPreferences $profileDir

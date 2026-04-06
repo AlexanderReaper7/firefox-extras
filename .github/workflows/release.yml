@@ -36,7 +36,7 @@ jobs:
 
       - name: Package chrome folder
         run: |
-          zip -r firefox-chrome.zip chrome
+          zip -r firefox-chrome.zip chrome vendor
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
