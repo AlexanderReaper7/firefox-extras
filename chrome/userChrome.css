@@ -1,8 +1,6 @@
 /* Firefox userChrome entry point
    This file imports the generated findbar styles when present.
 
-   Attribution: Based on and inspired by
-   https://github.com/ravindUwU/firefox-refined-findbar
 */
 
 @import url('./findbar.css');
@@ -15,9 +13,28 @@
 /* Toolbar clock widget */
 #toolbar-clock-widget {
   padding-inline: 8px;
-  opacity: 0.85;
+  color: inherit;
+  align-items: stretch;
+  display: flex;
 }
 
 #toolbar-clock-label {
-  font-size: 0.9em;
+  font-size: 1.1em;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}
+
+/* In the customize palette, give it enough room and center the label */
+#toolbar-clock-widget[place='palette'] {
+  width: auto;
+  min-width: max-content;
+  align-items: center;
+  padding-inline: 8px;
+}
+
+#toolbar-clock-widget[place='palette'] #toolbar-clock-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

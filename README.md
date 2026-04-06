@@ -36,6 +36,8 @@ A `clock.uc.js` user script (`chrome/JS/clock.uc.js`) is included that displays
 the current date and time in the Firefox toolbar to the right of the address
 bar. It is deployed automatically by the deploy scripts alongside the loader.
 
+![toolbar clock preview](image.png)
+
 ### ⚠️ Loader install requires elevation on some platforms
 
 The loader requires two files to be placed in the **Firefox installation
