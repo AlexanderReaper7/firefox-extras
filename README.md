@@ -1,17 +1,26 @@
 # Firefox Extras: Refined Findbar (centered, fixed, scalable)
 
-This repository provides a Firefox `chrome/` customization focused on a refined
-findbar.
+This is my personal collection of Firefox customizations, easily installed via a Powershell script.
 
-### Based on and inspired by: https://github.com/ravindUwU/firefox-refined-findbar
+## Quick Install
 
-## Options (SCSS)
+```powershell
+iwr https://raw.githubusercontent.com/AlexanderReaper7/firefox-extras/main/scripts/deploy.ps1 | iex
+```
+
+## Findbar customization
+
+Moves the findbar to the top center of the screen and restyles it.
+
+![findbar preview](findbar-preview.png)
+
+Based on and inspired by: https://github.com/ravindUwU/firefox-refined-findbar
 
 See [`src/findbar.scss`](src/findbar.scss) for all customization options.
 
 ---
 
-## JS Loader & Toolbar Clock
+## JS Loader
 
 This project vendors the
 [MrOtherGuy/fx-autoconfig](https://github.com/MrOtherGuy/fx-autoconfig) JS
