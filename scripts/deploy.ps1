@@ -287,12 +287,14 @@ function Deploy-Loader {
         Write-Log "Deployed: config-prefs.js -> Firefox install dir/defaults/pref/"
 
         Write-Log "Loader deployed to Firefox install directory successfully." -Level "Success"
+        return $true
     }
     catch {
         Write-Log "Could not deploy loader to Firefox install directory: $($_.Exception.Message)" -Level "Error"
         Write-Log "You may need to run this script as Administrator (Windows) or with sudo (Linux/macOS)."
         Write-Log "Manually copy vendor/fx-autoconfig/program/config.js to your Firefox installation directory."
         Write-Log "Manually copy vendor/fx-autoconfig/program/defaults/pref/config-prefs.js to <FF install>/defaults/pref/"
+        return $false
     }
 }
 
@@ -342,12 +344,17 @@ function Deploy-Local {
         }
         
         # Deploy the vendored JS loader
-        Deploy-Loader $profileDir
+        $loaderOk = Deploy-Loader $profileDir
         
         # Update Firefox preferences
         Update-FirefoxPreferences $profileDir
         
-        Write-Log "Local deployment completed successfully!" -Level "Success"
+        if ($loaderOk) {
+            Write-Log "Local deployment completed successfully!" -Level "Success"
+        } else {
+            Write-Log "Local deployment completed with warnings: loader program files could not be installed to the Firefox directory." -Level "Error"
+            Write-Log "Chrome profile files were installed. Re-run as Administrator (Windows) or with sudo (Linux/macOS) to complete the loader installation."
+        }
         Write-Log "Please restart Firefox to apply the changes."
     }
     catch {
@@ -408,12 +415,17 @@ function Deploy-Release {
 
             # Deploy the fx-autoconfig JS loader from the extracted vendor directory
             $extractedVendorDir = Join-Path $extractDir "vendor\fx-autoconfig"
-            Deploy-Loader $profileDir $extractedVendorDir
+            $loaderOk = Deploy-Loader $profileDir $extractedVendorDir
             
             # Update Firefox preferences
             Update-FirefoxPreferences $profileDir
             
-            Write-Log "Deployment completed successfully!" -Level "Success"
+            if ($loaderOk) {
+                Write-Log "Deployment completed successfully!" -Level "Success"
+            } else {
+                Write-Log "Deployment completed with warnings: loader program files could not be installed to the Firefox directory." -Level "Error"
+                Write-Log "Chrome profile files were installed. Re-run as Administrator (Windows) or with sudo (Linux/macOS) to complete the loader installation."
+            }
             Write-Log "Please restart Firefox to apply the changes."
         }
         finally {
