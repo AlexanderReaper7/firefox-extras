@@ -2,11 +2,16 @@
 // @name           Toolbar Clock
 // @description    Shows current date and time as a customizable toolbar widget
 // @author         AlexanderReaper7
-// @version        2.0.0
+// @version        2.1.0
 // @homepageURL    https://github.com/AlexanderReaper7/firefox-extras
+// @onlyonce
 // ==/UserScript==
 
 (function () {
+  const { CustomizableUI } = ChromeUtils.importESModule(
+    'resource:///modules/CustomizableUI.sys.mjs'
+  );
+
   const WIDGET_ID = 'toolbar-clock-widget';
 
   // Avoid re-registering on script reload
