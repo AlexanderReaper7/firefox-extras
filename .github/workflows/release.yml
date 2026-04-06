@@ -19,6 +19,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: main
 
       - name: Setup Node
         uses: actions/setup-node@v6
@@ -30,6 +33,19 @@ jobs:
 
       - name: Auto-fix formatting with Prettier
         run: npm run format
+
+      - name: Commit formatting fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if ! git diff --quiet; then
+            git commit -am "chore: auto-fix formatting [skip ci]"
+            # Move the tag to the new commit so the release points at the fixed source
+            TAG="${{ github.event.inputs.tag_name || github.ref_name }}"
+            git tag -f "$TAG"
+            git push origin main
+            git push origin "$TAG" --force
+          fi
 
       - name: Validate code quality
         run: npm run validate
