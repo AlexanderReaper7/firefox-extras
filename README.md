@@ -1,6 +1,7 @@
 # Firefox Extras: Refined Findbar (centered, fixed, scalable)
 
-This is my personal collection of Firefox customizations, easily installed via a Powershell script.
+This is my personal collection of Firefox customizations, easily installed via a
+Powershell script.
 
 ## Quick Install
 
@@ -67,7 +68,8 @@ pwsh scripts/deploy.ps1 -Local   # from local build
 ```
 
 **Always review remote scripts before running.**  
-**Supported platforms:** Windows, macOS, Linux (requires PowerShell Core on non-Windows)
+**Supported platforms:** Windows, macOS, Linux (requires PowerShell Core on
+non-Windows)
 
 Option B: Manual Installation
 

@@ -16,7 +16,7 @@
     "format:check": "prettier --check .",
     "clean": "rm -f chrome/findbar.css chrome/findbar.css.map",
     "validate": "npm run lint && npm run format:check && npm run build",
-    "prepare": "npm run validate",
+    "prepare": "husky",
     "deploy": "node scripts/deploy.js",
     "deploy:local": "node scripts/deploy.js --local",
     "deploy:ps1": "pwsh scripts/deploy.ps1",
@@ -24,7 +24,12 @@
     "test:deploy": "node scripts/test-deploy.js",
     "test:pages": "node scripts/test-pages.js"
   },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  },
   "devDependencies": {
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
     "sass": "^1.77.0",
     "stylelint": "^14.16.1",
     "stylelint-config-prettier": "^9.0.5",
