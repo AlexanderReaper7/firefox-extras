@@ -301,11 +301,13 @@ function deployLoader(profileDir, vendorDir) {
     );
     log('Deployed: config-prefs.js -> Firefox install dir/defaults/pref/');
     log('Loader deployed to Firefox install directory successfully!', 'success');
+    return true;
   } catch (error) {
     log(`Could not deploy loader to Firefox install directory: ${error.message}`, 'error');
     log('You may need to run as Administrator (Windows) or with sudo (Linux/macOS).');
     log('Manually copy vendor/fx-autoconfig/program/config.js to your Firefox installation directory.');
     log('Manually copy vendor/fx-autoconfig/program/defaults/pref/config-prefs.js to <FF install>/defaults/pref/');
+    return false;
   }
 }
 
@@ -357,12 +359,22 @@ async function deployLocal() {
     }
 
     // Deploy the vendored JS loader
-    deployLoader(profileDir);
+    const loaderOk = deployLoader(profileDir);
 
     // Update Firefox preferences
     updateFirefoxPreferences(profileDir);
 
-    log('Local deployment completed successfully!', 'success');
+    if (loaderOk) {
+      log('Local deployment completed successfully!', 'success');
+    } else {
+      log(
+        'Local deployment completed with warnings: loader program files could not be installed to the Firefox directory.',
+        'error'
+      );
+      log(
+        'Chrome profile files were installed. Re-run as Administrator (Windows) or with sudo (Linux/macOS) to complete the loader installation.'
+      );
+    }
     log('Please restart Firefox to apply the changes.');
   } catch (error) {
     log(`Local deployment failed: ${error.message}`, 'error');
@@ -429,12 +441,22 @@ async function deploy() {
 
       // Deploy the fx-autoconfig JS loader from the extracted vendor directory
       const extractedVendorDir = path.join(extractDir, 'vendor', 'fx-autoconfig');
-      deployLoader(profileDir, extractedVendorDir);
+      const loaderOk = deployLoader(profileDir, extractedVendorDir);
 
       // Update Firefox preferences
       updateFirefoxPreferences(profileDir);
 
-      log('Deployment completed successfully!', 'success');
+      if (loaderOk) {
+        log('Deployment completed successfully!', 'success');
+      } else {
+        log(
+          'Deployment completed with warnings: loader program files could not be installed to the Firefox directory.',
+          'error'
+        );
+        log(
+          'Chrome profile files were installed. Re-run as Administrator (Windows) or with sudo (Linux/macOS) to complete the loader installation.'
+        );
+      }
       log('Please restart Firefox to apply the changes.');
     } finally {
       // Cleanup temp directory and all contents
