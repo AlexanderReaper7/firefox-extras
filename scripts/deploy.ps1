@@ -61,10 +61,14 @@ The deployment script will:
 - Automatically detect your Firefox profile directory
 - Download the latest release from GitHub (or use local build)
 - Extract and install the chrome folder
+- Deploy the vendored fx-autoconfig JS loader (utils/ files to profile)
+- Copy loader program files to Firefox install directory (may require elevation)
 - Configure Firefox preferences
 - No manual steps required!
 
 Supported platforms: Windows, macOS, Linux (with PowerShell Core)
+Note: Deploying config.js to the Firefox install directory may require running
+      as Administrator (Windows) or with sudo (Linux/macOS).
 
 "@
     exit 0
@@ -206,6 +210,87 @@ function Download-File {
     }
 }
 
+# Get Firefox installation directory
+function Get-FirefoxInstallDirectory {
+    $platform = [System.Environment]::OSVersion.Platform
+    if ($IsWindows -or $platform -eq "Win32NT") {
+        # Try common install paths
+        $candidates = @(
+            "C:\Program Files\Mozilla Firefox",
+            "C:\Program Files (x86)\Mozilla Firefox"
+        )
+        foreach ($c in $candidates) {
+            if (Test-Path (Join-Path $c "firefox.exe")) { return $c }
+        }
+        throw "Could not find Firefox installation directory. Please install Firefox or set the path manually."
+    }
+    elseif ($IsMacOS -or $platform -eq "MacOSX") {
+        return "/Applications/Firefox.app/Contents/Resources"
+    }
+    elseif ($IsLinux -or $platform -eq "Unix") {
+        foreach ($c in @("/usr/lib/firefox", "/usr/lib64/firefox", "/usr/share/firefox", "/opt/firefox")) {
+            if (Test-Path $c) { return $c }
+        }
+        throw "Could not find Firefox installation directory."
+    }
+    else {
+        throw "Unsupported platform: $platform"
+    }
+}
+
+# Deploy the vendored fx-autoconfig loader files
+function Deploy-Loader {
+    param([string]$ProfileDir)
+
+    $scriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
+    $repoRoot   = Split-Path $scriptDir -Parent
+    $vendorDir  = Join-Path $repoRoot "vendor\fx-autoconfig"
+
+    if (-not (Test-Path $vendorDir)) {
+        Write-Log "Vendor directory not found: $vendorDir" -Level "Error"
+        Write-Log "The fx-autoconfig loader files should be in vendor/fx-autoconfig/"
+        return
+    }
+
+    # --- Profile-side files (no elevation needed) ---
+    $srcUtils  = Join-Path $vendorDir "profile\chrome\utils"
+    $destUtils = Join-Path $ProfileDir "chrome\utils"
+    New-Item $destUtils -ItemType Directory -Force | Out-Null
+    Get-ChildItem $srcUtils -File | ForEach-Object {
+        Copy-Item $_.FullName (Join-Path $destUtils $_.Name) -Force
+        Write-Log "Deployed loader: $($_.Name) -> chrome/utils/"
+    }
+
+    # Ensure loader-required directories exist in the profile
+    foreach ($dir in @("chrome\JS", "chrome\CSS", "chrome\resources")) {
+        New-Item (Join-Path $ProfileDir $dir) -ItemType Directory -Force | Out-Null
+    }
+
+    # --- Install-dir-side files (may need elevation on some platforms) ---
+    try {
+        $ffInstall = Get-FirefoxInstallDirectory
+        Write-Log "Firefox install directory: $ffInstall"
+
+        $srcConfig = Join-Path $vendorDir "program\config.js"
+        Copy-Item $srcConfig (Join-Path $ffInstall "config.js") -Force
+        Write-Log "Deployed: config.js -> Firefox install dir"
+
+        $prefDest = Join-Path $ffInstall "defaults\pref"
+        New-Item $prefDest -ItemType Directory -Force | Out-Null
+        $srcPrefs = Join-Path $vendorDir "program\defaults\pref\config-prefs.js"
+        Copy-Item $srcPrefs (Join-Path $prefDest "config-prefs.js") -Force
+        Write-Log "Deployed: config-prefs.js -> Firefox install dir/defaults/pref/"
+
+        Write-Log "Loader deployed to Firefox install directory successfully." -Level "Success"
+    }
+    catch {
+        Write-Log "Could not deploy loader to Firefox install directory: $($_.Exception.Message)" -Level "Error"
+        Write-Log "You may need to run this script as Administrator (Windows) or with sudo (Linux/macOS)."
+        Write-Log "Manually copy vendor/fx-autoconfig/program/config.js to your Firefox installation directory."
+        Write-Log "Manually copy vendor/fx-autoconfig/program/defaults/pref/config-prefs.js to <FF install>/defaults/pref/"
+    }
+}
+
 # Local deployment function
 function Deploy-Local {
     try {
@@ -230,12 +315,29 @@ function Deploy-Local {
             New-Item $targetChromeDir -ItemType Directory -Force | Out-Null
         }
         
+        # Copy top-level files only
         $files = Get-ChildItem $localChromeDir -File
         foreach ($file in $files) {
             $destPath = Join-Path $targetChromeDir $file.Name
             Copy-Item $file.FullName $destPath -Force
             Write-Log "Copied $($file.Name) to Firefox profile"
         }
+
+        # Copy chrome subdirectories (JS/, CSS/, resources/)
+        foreach ($subdir in @("JS", "CSS", "resources")) {
+            $srcSubdir = Join-Path $localChromeDir $subdir
+            if (Test-Path $srcSubdir) {
+                $destSubdir = Join-Path $targetChromeDir $subdir
+                New-Item $destSubdir -ItemType Directory -Force | Out-Null
+                Get-ChildItem $srcSubdir -File | ForEach-Object {
+                    Copy-Item $_.FullName (Join-Path $destSubdir $_.Name) -Force
+                    Write-Log "Copied $subdir/$($_.Name) to Firefox profile"
+                }
+            }
+        }
+        
+        # Deploy the vendored JS loader
+        Deploy-Loader $profileDir
         
         # Update Firefox preferences
         Update-FirefoxPreferences $profileDir

@@ -8,6 +8,14 @@
 @import url('./findbar.css');
 
 /* show bookmarks even in fullscreen mode */
-#PersonalToolbar:not([style*="pointer-events: none"]) {
+#PersonalToolbar:not([style*='pointer-events: none']) {
   visibility: visible !important;
+}
+
+/* Toolbar clock */
+#toolbar-clock {
+  font-size: 0.85em !important;
+  padding-inline: 8px !important;
+  opacity: 0.85;
+  pointer-events: none;
 }
