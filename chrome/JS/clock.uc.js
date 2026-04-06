@@ -48,10 +48,14 @@
 
         update();
         const intervalId = setInterval(update, 1000);
-        doc.defaultView.addEventListener('unload', () => {
-          log('window unloading, clearing interval');
-          clearInterval(intervalId);
-        }, { once: true });
+        doc.defaultView.addEventListener(
+          'unload',
+          () => {
+            log('window unloading, clearing interval');
+            clearInterval(intervalId);
+          },
+          { once: true }
+        );
         log('onBuild complete, returning node');
         return node;
       },
