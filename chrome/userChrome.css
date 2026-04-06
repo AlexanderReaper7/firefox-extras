@@ -12,10 +12,12 @@
   visibility: visible !important;
 }
 
-/* Toolbar clock */
-#toolbar-clock {
-  font-size: 0.85em !important;
-  padding-inline: 8px !important;
+/* Toolbar clock widget */
+#toolbar-clock-widget {
+  padding-inline: 8px;
   opacity: 0.85;
-  pointer-events: none;
+}
+
+#toolbar-clock-label {
+  font-size: 0.9em;
 }
