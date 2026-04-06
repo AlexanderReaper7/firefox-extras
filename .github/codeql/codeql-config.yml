@@ -1,4 +1,4 @@
-name: "Firefox Extras CodeQL Configuration"
+name: 'Firefox Extras CodeQL Configuration'
 
 paths-ignore:
   # Vendored third-party files must not be modified; exclude from analysis
