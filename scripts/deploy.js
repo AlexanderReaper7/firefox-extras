@@ -230,8 +230,83 @@ function getRelease(version = 'latest') {
 }
 
 /**
- * Local deployment function - installs from local chrome/ directory
+ * Find the Firefox installation directory based on OS
  */
+function getFirefoxInstallDir() {
+  const platform = os.platform();
+  if (platform === 'win32') {
+    const candidates = [
+      path.join('C:\\Program Files\\Mozilla Firefox'),
+      path.join('C:\\Program Files (x86)\\Mozilla Firefox'),
+    ];
+    for (const c of candidates) {
+      if (fs.existsSync(path.join(c, 'firefox.exe'))) return c;
+    }
+    throw new Error('Could not find Firefox installation directory.');
+  }
+  if (platform === 'darwin') {
+    return '/Applications/Firefox.app/Contents/Resources';
+  }
+  if (platform === 'linux') {
+    const candidates = ['/usr/lib/firefox', '/usr/lib64/firefox', '/usr/share/firefox', '/opt/firefox'];
+    for (const c of candidates) {
+      if (fs.existsSync(c)) return c;
+    }
+    throw new Error('Could not find Firefox installation directory.');
+  }
+  throw new Error(`Unsupported platform: ${platform}`);
+}
+
+/**
+ * Deploy the vendored fx-autoconfig loader files
+ */
+function deployLoader(profileDir) {
+  const vendorDir = path.join(__dirname, '..', 'vendor', 'fx-autoconfig');
+
+  if (!fs.existsSync(vendorDir)) {
+    log('Vendor directory not found: ' + vendorDir, 'error');
+    log('The fx-autoconfig loader files should be in vendor/fx-autoconfig/');
+    return;
+  }
+
+  // Profile-side: utils/ files
+  const srcUtils = path.join(vendorDir, 'profile', 'chrome', 'utils');
+  const destUtils = path.join(profileDir, 'chrome', 'utils');
+  fs.mkdirSync(destUtils, { recursive: true });
+  for (const file of fs.readdirSync(srcUtils)) {
+    fs.copyFileSync(path.join(srcUtils, file), path.join(destUtils, file));
+    log(`Deployed loader: ${file} -> chrome/utils/`);
+  }
+
+  // Ensure loader-required directories exist in the profile
+  for (const dir of ['chrome/JS', 'chrome/CSS', 'chrome/resources']) {
+    fs.mkdirSync(path.join(profileDir, dir), { recursive: true });
+  }
+
+  // Install-dir-side: program files (may need elevation)
+  try {
+    const ffInstall = getFirefoxInstallDir();
+    log(`Firefox install directory: ${ffInstall}`);
+
+    fs.copyFileSync(path.join(vendorDir, 'program', 'config.js'), path.join(ffInstall, 'config.js'));
+    log('Deployed: config.js -> Firefox install dir');
+
+    const prefDest = path.join(ffInstall, 'defaults', 'pref');
+    fs.mkdirSync(prefDest, { recursive: true });
+    fs.copyFileSync(
+      path.join(vendorDir, 'program', 'defaults', 'pref', 'config-prefs.js'),
+      path.join(prefDest, 'config-prefs.js')
+    );
+    log('Deployed: config-prefs.js -> Firefox install dir/defaults/pref/');
+    log('Loader deployed to Firefox install directory successfully!', 'success');
+  } catch (error) {
+    log(`Could not deploy loader to Firefox install directory: ${error.message}`, 'error');
+    log('You may need to run as Administrator (Windows) or with sudo (Linux/macOS).');
+    log('Manually copy vendor/fx-autoconfig/program/config.js to your Firefox installation directory.');
+    log('Manually copy vendor/fx-autoconfig/program/defaults/pref/config-prefs.js to <FF install>/defaults/pref/');
+  }
+}
+
 async function deployLocal() {
   try {
     log('Starting local deployment of firefox-extras');
@@ -255,9 +330,32 @@ async function deployLocal() {
     for (const file of files) {
       const srcPath = path.join(localChromeDir, file);
       const destPath = path.join(targetChromeDir, file);
-      fs.copyFileSync(srcPath, destPath);
-      log(`Copied ${file} to Firefox profile`);
+      // Only copy files (not subdirectories like JS/, CSS/, resources/)
+      if (fs.statSync(srcPath).isFile()) {
+        fs.copyFileSync(srcPath, destPath);
+        log(`Copied ${file} to Firefox profile`);
+      }
     }
+
+    // Copy chrome subdirectories (JS/, CSS/, resources/)
+    for (const subdir of ['JS', 'CSS', 'resources']) {
+      const srcSubdir = path.join(localChromeDir, subdir);
+      if (fs.existsSync(srcSubdir)) {
+        const destSubdir = path.join(targetChromeDir, subdir);
+        fs.mkdirSync(destSubdir, { recursive: true });
+        for (const file of fs.readdirSync(srcSubdir)) {
+          const srcPath = path.join(srcSubdir, file);
+          const destPath = path.join(destSubdir, file);
+          if (fs.statSync(srcPath).isFile()) {
+            fs.copyFileSync(srcPath, destPath);
+            log(`Copied ${subdir}/${file} to Firefox profile`);
+          }
+        }
+      }
+    }
+
+    // Deploy the vendored JS loader
+    deployLoader(profileDir);
 
     // Update Firefox preferences
     updateFirefoxPreferences(profileDir);
@@ -354,11 +452,15 @@ The deployment script will:
 - Automatically detect your Firefox profile directory
 - Download the latest release from GitHub (or use local build)
 - Extract and install the chrome folder
+- Deploy the vendored fx-autoconfig JS loader (utils/ files to profile)
+- Copy loader program files to Firefox install directory (may require elevation)
 - Configure Firefox preferences
 - No external dependencies required!
 
 Supported platforms: Windows, macOS, Linux
 PowerShell version: Requires PowerShell Core on non-Windows platforms
+Note: Deploying config.js to the Firefox install directory may require running
+      as Administrator (Windows) or with sudo (Linux/macOS).
     `);
     process.exit(0);
   }

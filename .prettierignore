@@ -8,6 +8,9 @@ node_modules/
 chrome/findbar.css
 *.css.map
 
+# Vendored third-party files (must remain bit-for-bit identical to upstream)
+vendor/
+
 # OS generated files
 .DS_Store
 .DS_Store?

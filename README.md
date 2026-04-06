@@ -63,7 +63,36 @@ findbar.
 
 ---
 
-## Install
+## JS Loader & Toolbar Clock
+
+This project vendors the
+[MrOtherGuy/fx-autoconfig](https://github.com/MrOtherGuy/fx-autoconfig) JS
+loader directly into the repository (under `vendor/fx-autoconfig/`) so that
+**zero external dependencies are fetched at deploy time** (supply-chain safety).
+The pinned version is fully auditable and can be updated or replaced — see
+[`vendor/fx-autoconfig/VENDOR.md`](vendor/fx-autoconfig/VENDOR.md) for details.
+
+### Toolbar Clock
+
+A `clock.uc.js` user script (`chrome/JS/clock.uc.js`) is included that displays
+the current date and time in the Firefox toolbar to the right of the address
+bar. It is deployed automatically by the deploy scripts alongside the loader.
+
+### ⚠️ Loader install requires elevation on some platforms
+
+The loader requires two files to be placed in the **Firefox installation
+directory** (e.g. `C:\Program Files\Mozilla Firefox\` on Windows,
+`/usr/lib/firefox/` on Linux):
+
+- `config.js`
+- `defaults/pref/config-prefs.js`
+
+The deploy scripts attempt this automatically, but may require you to run as
+**Administrator** (Windows) or with **sudo** (Linux/macOS). If automatic
+installation fails, copy the files manually from `vendor/fx-autoconfig/program/`
+to your Firefox installation directory.
+
+---
 
 Option A: Quick Install (Recommended)
 
@@ -168,9 +197,13 @@ See [DEVELOPMENT.md](DEVELOPMENT.md) for detailed development instructions.
 
 ## Repo layout
 
-- `chrome/userChrome.css` — imports the compiled `findbar.css` at runtime.
+- `chrome/userChrome.css` — imports the compiled `findbar.css` at runtime; also
+  contains toolbar clock styles.
+- `chrome/JS/clock.uc.js` — toolbar clock user script (requires the JS loader).
 - `src/refined-findbar.scss` — the mixin and styles
 - `src/findbar.scss` — entry file configuring options
+- `vendor/fx-autoconfig/` — vendored MrOtherGuy/fx-autoconfig JS loader (pinned
+  commit; see VENDOR.md)
 - `docs/` — helper page for Sass Playground (published via GitHub Pages)
 - GitHub Actions:
   - `release.yml`: builds compiled CSS on tag push, uploads release assets
