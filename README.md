@@ -1,4 +1,4 @@
-# Firefox Extras: Refined Findbar (centered, fixed, scalable)
+# Firefox Extras
 
 This is my personal collection of Firefox customizations, easily installed via a
 Powershell script.
