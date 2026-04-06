@@ -1,35 +1,51 @@
 // ==UserScript==
 // @name           Toolbar Clock
-// @description    Shows current date and time in the Firefox toolbar (right of address bar)
+// @description    Shows current date and time as a customizable toolbar widget
 // @author         AlexanderReaper7
-// @version        1.0.0
+// @version        2.0.0
 // @homepageURL    https://github.com/AlexanderReaper7/firefox-extras
 // ==/UserScript==
 
 (function () {
-  const navbar = document.getElementById('nav-bar');
-  if (!navbar) return;
+  const WIDGET_ID = 'toolbar-clock-widget';
 
-  const clock = document.createXULElement('label');
-  clock.id = 'toolbar-clock';
-  clock.setAttribute('flex', '0');
+  // Avoid re-registering on script reload
+  if (CustomizableUI.getWidget(WIDGET_ID)?.type !== 'custom') {
+    CustomizableUI.createWidget({
+      id: WIDGET_ID,
+      type: 'custom',
+      defaultArea: CustomizableUI.AREA_NAVBAR,
+      label: 'Clock',
+      tooltiptext: 'Current date and time',
 
-  // Insert to the right of the address bar
-  navbar.appendChild(clock);
+      onBuild(doc) {
+        const node = doc.createXULElement('toolbaritem');
+        node.id = WIDGET_ID;
+        node.setAttribute('label', 'Clock');
 
-  function update() {
-    const now = new Date();
-    clock.textContent = now.toLocaleString(undefined, {
-      weekday: 'short',
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
+        const label = doc.createXULElement('label');
+        label.id = 'toolbar-clock-label';
+        label.setAttribute('flex', '1');
+        label.style.cssText = 'pointer-events: none; min-width: max-content;';
+        node.appendChild(label);
+
+        function update() {
+          label.textContent = new Date().toLocaleString(undefined, {
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          });
+        }
+
+        update();
+        const intervalId = setInterval(update, 1000);
+        doc.defaultView.addEventListener('unload', () => clearInterval(intervalId), { once: true });
+        return node;
+      },
     });
   }
-
-  update();
-  setInterval(update, 1000);
 })();
