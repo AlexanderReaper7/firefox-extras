@@ -260,8 +260,10 @@ function getFirefoxInstallDir() {
 /**
  * Deploy the vendored fx-autoconfig loader files
  */
-function deployLoader(profileDir) {
-  const vendorDir = path.join(__dirname, '..', 'vendor', 'fx-autoconfig');
+function deployLoader(profileDir, vendorDir) {
+  if (!vendorDir) {
+    vendorDir = path.join(__dirname, '..', 'vendor', 'fx-autoconfig');
+  }
 
   if (!fs.existsSync(vendorDir)) {
     log('Vendor directory not found: ' + vendorDir, 'error');
@@ -400,15 +402,34 @@ async function deploy() {
     const zipPath = path.join(tempDir, RELEASE_ASSET_NAME);
 
     try {
-      // Download the release
+      // Extract to subdirectory so we can selectively copy files
+      const extractDir = path.join(tempDir, 'extracted');
+      fs.mkdirSync(extractDir);
+
+      // Extract the release
       log(`Downloading ${asset.name}...`);
       await downloadFile(asset.browser_download_url, zipPath);
       log('Download completed');
 
-      // Extract to profile directory
-      log('Extracting files to Firefox profile...');
-      await extractZip(zipPath, profileDir);
+      // Extract to temp subdirectory
+      log('Extracting release files...');
+      await extractZip(zipPath, extractDir);
       log('Files extracted successfully');
+
+      // Copy chrome directory to Firefox profile
+      const srcChromeDir = path.join(extractDir, 'chrome');
+      const destChromeDir = path.join(profileDir, 'chrome');
+      if (fs.existsSync(srcChromeDir)) {
+        fs.mkdirSync(destChromeDir, { recursive: true });
+        fs.cpSync(srcChromeDir, destChromeDir, { recursive: true, force: true });
+        log('Chrome files installed to Firefox profile');
+      } else {
+        throw new Error('chrome/ directory not found in release package');
+      }
+
+      // Deploy the fx-autoconfig JS loader from the extracted vendor directory
+      const extractedVendorDir = path.join(extractDir, 'vendor', 'fx-autoconfig');
+      deployLoader(profileDir, extractedVendorDir);
 
       // Update Firefox preferences
       updateFirefoxPreferences(profileDir);
@@ -416,11 +437,10 @@ async function deploy() {
       log('Deployment completed successfully!', 'success');
       log('Please restart Firefox to apply the changes.');
     } finally {
-      // Cleanup
-      if (fs.existsSync(zipPath)) {
-        fs.unlinkSync(zipPath);
+      // Cleanup temp directory and all contents
+      if (fs.existsSync(tempDir)) {
+        fs.rmSync(tempDir, { recursive: true, force: true });
       }
-      fs.rmdirSync(tempDir);
     }
   } catch (error) {
     log(`Deployment failed: ${error.message}`, 'error');
