@@ -238,6 +238,39 @@ function Get-FirefoxInstallDirectory {
     }
 }
 
+# Intelligently merge customKeys.json into the Firefox profile
+# New keys from source are added; existing keys in the destination are preserved.
+function Merge-CustomKeysJson {
+    param(
+        [string]$SourcePath,
+        [string]$DestPath
+    )
+
+    if (-not (Test-Path $SourcePath)) {
+        Write-Log "customKeys.json not found at: $SourcePath" -Level "Error"
+        return
+    }
+
+    $srcJson = Get-Content $SourcePath -Raw | ConvertFrom-Json
+
+    if (Test-Path $DestPath) {
+        $dstJson = Get-Content $DestPath -Raw | ConvertFrom-Json
+        $added = 0
+        foreach ($key in $srcJson.PSObject.Properties.Name) {
+            if ($dstJson.PSObject.Properties.Name -notcontains $key) {
+                $dstJson | Add-Member -NotePropertyName $key -NotePropertyValue $srcJson.$key
+                $added++
+            }
+        }
+        $dstJson | ConvertTo-Json -Depth 10 | Set-Content $DestPath
+        Write-Log "Merged customKeys.json: $added new key(s) added, existing keys preserved"
+    }
+    else {
+        Copy-Item $SourcePath $DestPath -Force
+        Write-Log "Installed customKeys.json to Firefox profile"
+    }
+}
+
 # Deploy the vendored fx-autoconfig loader files
 function Deploy-Loader {
     param(
@@ -343,6 +376,10 @@ function Deploy-Local {
             }
         }
         
+        # Merge customKeys.json to profile root
+        $localCustomKeysPath = Join-Path (Split-Path $scriptDir -Parent) "customKeys.json"
+        Merge-CustomKeysJson $localCustomKeysPath (Join-Path $profileDir "customKeys.json")
+
         # Deploy the vendored JS loader
         $loaderOk = Deploy-Loader $profileDir
         
@@ -412,6 +449,10 @@ function Deploy-Release {
             } else {
                 throw "chrome/ directory not found in release package"
             }
+
+            # Merge customKeys.json to profile root
+            $extractedCustomKeysPath = Join-Path $extractDir "customKeys.json"
+            Merge-CustomKeysJson $extractedCustomKeysPath (Join-Path $profileDir "customKeys.json")
 
             # Deploy the fx-autoconfig JS loader from the extracted vendor directory
             $extractedVendorDir = Join-Path $extractDir "vendor\fx-autoconfig"
