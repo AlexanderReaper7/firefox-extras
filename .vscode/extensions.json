@@ -9,9 +9,6 @@
     "mrmlnc.vscode-scss",
     "bradlc.vscode-tailwindcss",
 
-    // Git integration
-    "eamodio.gitlens",
-
     // Utilities
     "ms-vscode.vscode-json",
     "redhat.vscode-yaml",

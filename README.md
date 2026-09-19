@@ -38,6 +38,17 @@ It is deployed automatically by the deploy scripts alongside the loader.
 
 ![toolbar clock preview](toolbar-clock-preview.png)
 
+### Auto-hide Toolbar
+
+A `autohide-toolbar.uc.js` user script (`chrome/JS/autohide-toolbar.uc.js`) adds a
+toolbar widget that toggles auto-hiding the entire browser chrome (tabs, navigation
+bar, bookmarks bar). When enabled, the chrome slides out of view and reappears when
+you move the mouse to the top edge of the window — just like Firefox fullscreen, but
+without entering fullscreen mode so the Windows taskbar auto-hide still works.
+
+The state persists across restarts via the `userchrome.autohide-toolbar.enabled`
+preference. Styles are defined in `chrome/autohide-toolbar.css`.
+
 ### ⚠️ Loader install requires elevation on some platforms
 
 The loader requires two files to be placed in the **Firefox installation

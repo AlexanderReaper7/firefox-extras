@@ -1,0 +1,29 @@
+/* =============================================================================
+   Auto-hide Toolbar
+   Hides the browser chrome (tabs bar, navigation bar, bookmarks bar) and
+   reveals it by moving the mouse to the top edge of the window.
+
+   Activated by the [data-autohide] attribute on the root (#main-window),
+   which is toggled by the autohide-toolbar.uc.js toolbar widget.
+   ============================================================================= */
+
+/* Remove the toolbox from the layout flow so page content expands to full
+   window height, and slide it out of view leaving a 4 px hover strip. */
+#main-window[data-autohide] #navigator-toolbox {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  overflow: visible !important;
+  z-index: 999;
+  background-color: var(--toolbar-bgcolor) !important;
+  transform: translateY(calc(-100% + 4px));
+  transition: transform 180ms ease-in-out;
+}
+
+/* Reveal when the cursor enters the top hot zone or keyboard focus is inside */
+#main-window[data-autohide] #navigator-toolbox:hover,
+#main-window[data-autohide] #navigator-toolbox:focus-within {
+  transform: translateY(0) !important;
+  transition-duration: 80ms;
+}

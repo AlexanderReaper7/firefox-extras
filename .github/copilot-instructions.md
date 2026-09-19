@@ -94,10 +94,14 @@ npm run deploy:local   # Install to Firefox
 
 ```
 ├── src/
-│   └── findbar.scss     # Main SCSS source file (edit this to customize)
+│   └── findbar.scss           # Main SCSS source file (edit this to customize)
 ├── chrome/
-│   ├── userChrome.css   # Firefox entry point (imports findbar.css)
-│   └── findbar.css      # Generated CSS output (not in git)
+│   ├── userChrome.css         # Firefox entry point (imports CSS files)
+│   ├── autohide-toolbar.css   # Auto-hide toolbar styles (static, not compiled)
+│   ├── findbar.css            # Generated CSS output (not in git)
+│   └── JS/
+│       ├── clock.uc.js              # Toolbar clock widget
+│       ├── autohide-toolbar.uc.js   # Auto-hide toolbar toggle widget
 ├── scripts/
 │   ├── deploy.js        # Node.js deployment script
 │   ├── deploy.ps1       # PowerShell deployment script

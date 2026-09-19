@@ -4,6 +4,7 @@
 */
 
 @import url('./findbar.css');
+@import url('./autohide-toolbar.css');
 
 /* show bookmarks even in fullscreen mode */
 #PersonalToolbar:not([style*='pointer-events: none']) {
