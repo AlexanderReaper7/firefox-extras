@@ -40,14 +40,14 @@ It is deployed automatically by the deploy scripts alongside the loader.
 
 ### Auto-hide Toolbar
 
-A `autohide-toolbar.uc.js` user script (`chrome/JS/autohide-toolbar.uc.js`) adds a
-toolbar widget that toggles auto-hiding the entire browser chrome (tabs, navigation
-bar, bookmarks bar). When enabled, the chrome slides out of view and reappears when
-you move the mouse to the top edge of the window — just like Firefox fullscreen, but
-without entering fullscreen mode so the Windows taskbar auto-hide still works.
+The `autohide-toolbar.uc.js` user script (`chrome/JS/autohide-toolbar.uc.js`) hides the whole browser chrome (tabs, navigation bar, bookmarks bar). The chrome slides back in when the mouse reaches the top edge of the window, the way Firefox fullscreen does it, but the window stays a normal window, so an auto-hiding taskbar or panel (Windows, COSMIC) can still open.
 
-The state persists across restarts via the `userchrome.autohide-toolbar.enabled`
-preference. Styles are defined in `chrome/autohide-toolbar.css`.
+- An invisible 8px strip at the top edge reveals the chrome. Its height is `--autohide-hot-zone` in `chrome/autohide-toolbar.css`.
+- Keyboard focus inside the chrome, such as the address bar after Ctrl+L, keeps it revealed.
+- A menu or panel opened from the revealed chrome keeps it revealed until every open menu has closed. A menu opened from the page while the chrome is hidden does not reveal it.
+- Customize mode and fullscreen use Firefox's normal layout.
+
+Toggle it with the toolbar button, which can be moved from the "Customize toolbar..." menu, or with Shift+F11. The state persists across restarts in the `userchrome.autohide-toolbar.enabled` preference.
 
 ### ⚠️ Loader install requires elevation on some platforms
 
