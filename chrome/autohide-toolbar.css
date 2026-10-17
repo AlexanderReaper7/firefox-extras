@@ -11,10 +11,10 @@
    The motion copies the COSMIC panel's autohide (cosmic-panel 1.10.0,
    cosmic-panel-bin/src/space/panel_space.rs, handle_focus): the panel slides
    off its edge until only a handle is left, over transition_time with a
-   smootherstep curve, after the pointer has been on the handle for
-   unhide_delay or off the panel for wait_time. Sliding in uses the defaults
-   of its autohide_behavior config. Sliding out takes half the default time
-   and waits half as long, which the user chose on 2026-10-17 after using it.
+   smootherstep curve, after the pointer has been off the panel for
+   wait_time. Sliding out takes half the default time and waits half as long,
+   which the user chose on 2026-10-17 after using it. Sliding in is instant,
+   with no unhide_delay and no slide, the user's choice of 2026-10-18.
    ============================================================================= */
 
 #main-window {
@@ -25,11 +25,6 @@
      screen edge that stops the pointer, but a window with another one above
      it lets the pointer run past 4px. */
   --autohide-hot-zone: 16px;
-  /* unhide_delay: how long the pointer rests on the handle before the
-     toolbox starts to slide in. */
-  --autohide-show-delay: 200ms;
-  /* transition_time, sliding in. */
-  --autohide-show-duration: 200ms;
   /* wait_time: how long after the pointer leaves before it slides out.
      COSMIC's default is 1000ms. */
   --autohide-hide-delay: 500ms;
@@ -90,23 +85,16 @@
 
   /* Reveal on hover, and on keyboard focus or while a menu opened from the
      revealed chrome is still open ([data-autohide-held], set by the script).
-     The transition is the one of the state being entered, so the timing here
-     is the one for sliding in. */
+     The transition is the one of the state being entered, so none here
+     makes the reveal instant. */
   &:is(:hover, :focus-within, [data-autohide-held]) {
     transform: translateY(0);
-    transition-duration: var(--autohide-show-duration) !important;
-    transition-delay: var(--autohide-show-delay) !important;
+    transition: none !important;
 
     &::after {
       visibility: hidden;
-      transition-delay: calc(var(--autohide-show-delay) + var(--autohide-show-duration));
+      transition: none;
     }
-  }
-
-  /* Ctrl+L and friends should not wait for the delay meant for a pointer
-     passing over the handle. */
-  &:is(:focus-within, [data-autohide-held]) {
-    transition-delay: 0s !important;
   }
 }
 
