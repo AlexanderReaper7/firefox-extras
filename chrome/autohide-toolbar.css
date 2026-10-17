@@ -18,9 +18,13 @@
    ============================================================================= */
 
 #main-window {
-  /* handle_size: how much of the toolbox stays on screen while hidden. It is
-     also the only thing to hover to reveal the chrome. */
+  /* handle_size: how much of the toolbox stays on screen while hidden. */
   --autohide-handle: 4px;
+  /* How far from the top edge the pointer reveals the chrome: the handle and
+     an invisible strip below it. COSMIC has only the handle, which works on a
+     screen edge that stops the pointer, but a window with another one above
+     it lets the pointer run past 4px. */
+  --autohide-hot-zone: 16px;
   /* unhide_delay: how long the pointer rests on the handle before the
      toolbox starts to slide in. */
   --autohide-show-delay: 200ms;
@@ -70,6 +74,20 @@
     background-image: var(--toolbox-background-image), image(var(--toolbox-background-color-inactive));
   }
 
+  /* The invisible strip. Hovering it hovers the toolbox. Once the chrome has
+     slid in over the pointer, the strip is turned off, so it does not take
+     clicks or hold the chrome open below the revealed toolbars, and it comes
+     back once the chrome has slid out. */
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: calc(var(--autohide-hot-zone) - var(--autohide-handle));
+    transition: visibility 0s calc(var(--autohide-hide-delay) + var(--autohide-hide-duration));
+  }
+
   /* Reveal on hover, and on keyboard focus or while a menu opened from the
      revealed chrome is still open ([data-autohide-held], set by the script).
      The transition is the one of the state being entered, so the timing here
@@ -78,6 +96,11 @@
     transform: translateY(0);
     transition-duration: var(--autohide-show-duration) !important;
     transition-delay: var(--autohide-show-delay) !important;
+
+    &::after {
+      visibility: hidden;
+      transition-delay: calc(var(--autohide-show-delay) + var(--autohide-show-duration));
+    }
   }
 
   /* Ctrl+L and friends should not wait for the delay meant for a pointer
