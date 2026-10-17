@@ -13,8 +13,9 @@
    off its edge until only a handle is left, over transition_time with a
    smootherstep curve, after the pointer has been off the panel for
    wait_time. Sliding out takes half the default time and waits half as long,
-   which the user chose on 2026-10-17 after using it. Sliding in is instant,
-   with no unhide_delay and no slide, the user's choice of 2026-10-18.
+   which the user chose on 2026-10-17 after using it. Sliding in takes the
+   default time but starts at once, with no unhide_delay, the user's choice
+   of 2026-10-18.
    ============================================================================= */
 
 #main-window {
@@ -25,6 +26,8 @@
      screen edge that stops the pointer, but a window with another one above
      it lets the pointer run past 4px. */
   --autohide-hot-zone: 16px;
+  /* transition_time, sliding in. */
+  --autohide-show-duration: 200ms;
   /* wait_time: how long after the pointer leaves before it slides out.
      COSMIC's default is 1000ms. */
   --autohide-hide-delay: 500ms;
@@ -85,15 +88,16 @@
 
   /* Reveal on hover, and on keyboard focus or while a menu opened from the
      revealed chrome is still open ([data-autohide-held], set by the script).
-     The transition is the one of the state being entered, so none here
-     makes the reveal instant. */
+     The transition is the one of the state being entered, so the timing here
+     is the one for sliding in. */
   &:is(:hover, :focus-within, [data-autohide-held]) {
     transform: translateY(0);
-    transition: none !important;
+    transition-duration: var(--autohide-show-duration) !important;
+    transition-delay: 0s !important;
 
     &::after {
       visibility: hidden;
-      transition: none;
+      transition-delay: var(--autohide-show-duration);
     }
   }
 }
