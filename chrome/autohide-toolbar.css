@@ -7,15 +7,37 @@
    which autohide-toolbar.uc.js sets from the
    userchrome.autohide-toolbar.enabled pref. Customize mode and both kinds of
    fullscreen are left to Firefox's own layout.
+
+   The motion copies the COSMIC panel's autohide (cosmic-panel 1.10.0,
+   cosmic-panel-bin/src/space/panel_space.rs, handle_focus), using the
+   defaults of its autohide_behavior config: the panel slides off its edge
+   until only a handle is left, over transition_time with a smootherstep
+   curve, after the pointer has been on the handle for unhide_delay or off the
+   panel for wait_time.
    ============================================================================= */
 
 #main-window {
-  /* Height of the invisible strip at the top edge that reveals the chrome. */
-  --autohide-hot-zone: 8px;
+  /* handle_size: how much of the toolbox stays on screen while hidden. It is
+     also the only thing to hover to reveal the chrome. */
+  --autohide-handle: 4px;
+  /* transition_time, the same in both directions. */
+  --autohide-duration: 200ms;
+  /* unhide_delay: how long the pointer rests on the handle before the
+     toolbox starts to slide in. */
+  --autohide-show-delay: 200ms;
+  /* wait_time: how long after the pointer leaves before it slides out. */
+  --autohide-hide-delay: 1000ms;
+  /* smootherstep, 6t^5 - 15t^4 + 10t^3 (xdg_shell_wrapper/util.rs), sampled
+     at 21 points. The largest gap between these line segments and the curve
+     is 0.18% of the distance travelled. */
+  --autohide-easing: linear(
+    0, 0.0012, 0.0086, 0.0266, 0.0579, 0.1035, 0.1631, 0.2352, 0.3174, 0.4069, 0.5,
+    0.5931, 0.6826, 0.7648, 0.8369, 0.8965, 0.9421, 0.9734, 0.9914, 0.9988, 1
+  );
 }
 
 /* Remove the toolbox from the layout flow so page content expands to full
-   window height, and slide it fully out of view. */
+   window height, and slide it out of view except for the handle. */
 #main-window[data-autohide]:not([customizing], [inFullscreen], [inDOMFullscreen]) #navigator-toolbox {
   position: fixed !important;
   top: 0;
@@ -33,31 +55,47 @@
   background-repeat: var(--toolbox-background-repeat), no-repeat;
   background-position: var(--toolbox-background-position), top right;
   background-size: var(--toolbox-background-size), auto;
-  transform: translateY(-100%);
-  transition: transform 180ms ease-in-out;
+  transform: translateY(calc(-100% + var(--autohide-handle)));
+  /* Firefox's own transition on the toolbox (background-color, for inactive
+     windows) wins over a normal declaration here, because userChrome.css is a
+     user style sheet and Firefox's is an author one. Hence !important on each
+     transition declaration. */
+  transition: transform var(--autohide-duration) var(--autohide-easing) var(--autohide-hide-delay) !important;
 
   &:-moz-window-inactive {
     background-image: var(--toolbox-background-image), image(var(--toolbox-background-color-inactive));
   }
 
-  /* The hot zone. It hangs below the toolbox, so while the toolbox is hidden
-     it covers the top of the page, and hovering it counts as hovering the
-     toolbox. */
-  &::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    height: var(--autohide-hot-zone);
-  }
-
-  /* Reveal on hover or keyboard focus, and stay revealed while a menu opened
-     from the revealed chrome is still open ([data-autohide-held], set by the
-     script). */
+  /* Reveal on hover, and on keyboard focus or while a menu opened from the
+     revealed chrome is still open ([data-autohide-held], set by the script).
+     The transition is the one of the state being entered, so the delay here
+     is the one before sliding in. */
   &:is(:hover, :focus-within, [data-autohide-held]) {
     transform: translateY(0);
-    transition-duration: 80ms;
+    transition-delay: var(--autohide-show-delay) !important;
+  }
+
+  /* Ctrl+L and friends should not wait for the delay meant for a pointer
+     passing over the handle. */
+  &:is(:focus-within, [data-autohide-held]) {
+    transition-delay: 0s !important;
+  }
+}
+
+/* The COSMIC panel's own background, set by the script from the COSMIC
+   config: the theme's background colour at the panel's opacity. Only the
+   background is translucent, the way the panel keeps its applets opaque.
+   Toolbars inside the toolbox paint their own background, so they are made
+   transparent to let the toolbox's show through. The selected tab keeps its
+   colour, because Firefox resolves it on the root. */
+#main-window[data-autohide][data-cosmic-panel]:not([customizing], [inFullscreen], [inDOMFullscreen]) #navigator-toolbox {
+  --toolbar-background-color: transparent;
+  background: rgb(from var(--cosmic-panel-color) r g b / var(--cosmic-panel-opacity));
+
+  /* The panel turns opaque over a maximized window unless
+     keep_style_on_maximize is set, which the script has already folded in. */
+  #main-window[sizemode='maximized'] & {
+    --cosmic-panel-opacity: var(--cosmic-panel-opacity-maximized);
   }
 }
 

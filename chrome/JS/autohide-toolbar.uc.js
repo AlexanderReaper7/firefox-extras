@@ -80,6 +80,68 @@
     }
   }, true);
 
+  // Give the toolbox the COSMIC panel's background: the theme's background
+  // colour at the panel's opacity, read from the same config files the panel
+  // reads. Read again whenever the window is focused, so a change made in
+  // COSMIC Settings shows on the way back to Firefox. Anywhere these files
+  // are missing, such as outside COSMIC, data-cosmic-panel stays unset and
+  // the toolbox keeps Firefox's opaque background.
+  const configDir =
+    Services.env.get('XDG_CONFIG_HOME') || PathUtils.join(Services.dirsvc.get('Home', Ci.nsIFile).path, '.config');
+  const readConfig = (component, version, key) =>
+    IOUtils.readUTF8(PathUtils.join(configDir, 'cosmic', component, version, key)).then((text) => text.trim());
+
+  async function readCosmicPanel() {
+    // The panels COSMIC runs, in order. The first one is followed.
+    const name = (await readConfig('com.system76.CosmicPanel', 'v1', 'entries')).match(/"([^"]+)"/)[1];
+    const panel = `com.system76.CosmicPanel.${name}`;
+    const opacity = parseFloat(await readConfig(panel, 'v1', 'opacity'));
+    // A panel over a maximized window turns opaque unless this is set
+    // (cosmic-panel space_container/toplevel.rs).
+    const keepStyle = (await readConfig(panel, 'v1', 'keep_style_on_maximize')) === 'true';
+    const background = await readConfig(panel, 'v1', 'background');
+
+    // Color((r, g, b)) with channels from 0 to 1, or a theme.
+    const custom = background.match(/^Color\(\(\s*([\d.]+),\s*([\d.]+),\s*([\d.]+)/);
+    let color;
+    if (custom) {
+      const channels = custom.slice(1, 4).map((c) => parseFloat(c) * 100 + '%');
+      color = `rgb(${channels.join(' ')})`;
+    } else {
+      const dark =
+        background === 'Dark' ||
+        (background !== 'Light' && (await readConfig('com.system76.CosmicTheme.Mode', 'v1', 'is_dark')) === 'true');
+      // The theme's bg_color() is background.base, the first `base:` in the
+      // file. Theme config version 2 is the one libcosmic reads.
+      const themeId = dark ? 'com.system76.CosmicTheme.Dark' : 'com.system76.CosmicTheme.Light';
+      const theme = await readConfig(themeId, 'v2', 'background');
+      color = `#${theme.match(/base:\s*"#([0-9A-Fa-f]{6})/)[1]}`;
+    }
+    if (!(opacity >= 0 && opacity <= 1)) {
+      throw new Error(`unreadable opacity ${opacity}`);
+    }
+    return { color, opacity, maximizedOpacity: keepStyle ? opacity : 1 };
+  }
+
+  async function applyCosmicPanel() {
+    const root = document.documentElement;
+    try {
+      const { color, opacity, maximizedOpacity } = await readCosmicPanel();
+      root.style.setProperty('--cosmic-panel-color', color);
+      root.style.setProperty('--cosmic-panel-opacity', opacity);
+      root.style.setProperty('--cosmic-panel-opacity-maximized', maximizedOpacity);
+      root.setAttribute('data-cosmic-panel', '');
+    } catch (e) {
+      if (root.hasAttribute('data-cosmic-panel')) {
+        log('COSMIC panel config unreadable, keeping Firefox background:', e.message);
+      }
+      root.removeAttribute('data-cosmic-panel');
+    }
+  }
+
+  applyCosmicPanel();
+  window.addEventListener('activate', applyCosmicPanel);
+
   // Reachable while the chrome is hidden, which the widget is not.
   UC_API.Hotkeys.define({
     id: 'key_autohideToolbarToggle',

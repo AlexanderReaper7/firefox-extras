@@ -42,7 +42,8 @@ It is deployed automatically by the deploy scripts alongside the loader.
 
 The `autohide-toolbar.uc.js` user script (`chrome/JS/autohide-toolbar.uc.js`) hides the whole browser chrome (tabs, navigation bar, bookmarks bar). The chrome slides back in when the mouse reaches the top edge of the window, the way Firefox fullscreen does it, but the window stays a normal window, so an auto-hiding taskbar or panel (Windows, COSMIC) can still open.
 
-- An invisible 8px strip at the top edge reveals the chrome. Its height is `--autohide-hot-zone` in `chrome/autohide-toolbar.css`.
+- The chrome moves the way the COSMIC panel's autohide does: it slides out until a 4px handle is left, slides in after the pointer has rested on the handle for 200ms, and slides out 1000ms after the pointer leaves. Each slide takes 200ms on a smootherstep curve. The numbers are the defaults of the panel's `autohide_behavior`, and they are variables at the top of `chrome/autohide-toolbar.css`.
+- On COSMIC the toolbox takes the panel's background: the theme's background colour at the panel's opacity, opaque while the window is maximized unless the panel keeps its style on maximize. The script reads `~/.config/cosmic` at startup and again whenever the window gets focus, so a change made in COSMIC Settings shows without a restart. Without those files the toolbox keeps Firefox's opaque background.
 - Keyboard focus inside the chrome, such as the address bar after Ctrl+L, keeps it revealed.
 - A menu or panel opened from the revealed chrome keeps it revealed until every open menu has closed. A menu opened from the page while the chrome is hidden does not reveal it.
 - Customize mode and fullscreen use Firefox's normal layout.
