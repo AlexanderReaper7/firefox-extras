@@ -9,24 +9,28 @@
    fullscreen are left to Firefox's own layout.
 
    The motion copies the COSMIC panel's autohide (cosmic-panel 1.10.0,
-   cosmic-panel-bin/src/space/panel_space.rs, handle_focus), using the
-   defaults of its autohide_behavior config: the panel slides off its edge
-   until only a handle is left, over transition_time with a smootherstep
-   curve, after the pointer has been on the handle for unhide_delay or off the
-   panel for wait_time.
+   cosmic-panel-bin/src/space/panel_space.rs, handle_focus): the panel slides
+   off its edge until only a handle is left, over transition_time with a
+   smootherstep curve, after the pointer has been on the handle for
+   unhide_delay or off the panel for wait_time. Sliding in uses the defaults
+   of its autohide_behavior config. Sliding out takes half the default time
+   and waits half as long, which the user chose on 2026-10-17 after using it.
    ============================================================================= */
 
 #main-window {
   /* handle_size: how much of the toolbox stays on screen while hidden. It is
      also the only thing to hover to reveal the chrome. */
   --autohide-handle: 4px;
-  /* transition_time, the same in both directions. */
-  --autohide-duration: 200ms;
   /* unhide_delay: how long the pointer rests on the handle before the
      toolbox starts to slide in. */
   --autohide-show-delay: 200ms;
-  /* wait_time: how long after the pointer leaves before it slides out. */
-  --autohide-hide-delay: 1000ms;
+  /* transition_time, sliding in. */
+  --autohide-show-duration: 200ms;
+  /* wait_time: how long after the pointer leaves before it slides out.
+     COSMIC's default is 1000ms. */
+  --autohide-hide-delay: 500ms;
+  /* transition_time, sliding out. COSMIC's default is 200ms. */
+  --autohide-hide-duration: 100ms;
   /* smootherstep, 6t^5 - 15t^4 + 10t^3 (xdg_shell_wrapper/util.rs), sampled
      at 21 points. The largest gap between these line segments and the curve
      is 0.18% of the distance travelled. */
@@ -60,7 +64,7 @@
      windows) wins over a normal declaration here, because userChrome.css is a
      user style sheet and Firefox's is an author one. Hence !important on each
      transition declaration. */
-  transition: transform var(--autohide-duration) var(--autohide-easing) var(--autohide-hide-delay) !important;
+  transition: transform var(--autohide-hide-duration) var(--autohide-easing) var(--autohide-hide-delay) !important;
 
   &:-moz-window-inactive {
     background-image: var(--toolbox-background-image), image(var(--toolbox-background-color-inactive));
@@ -68,10 +72,11 @@
 
   /* Reveal on hover, and on keyboard focus or while a menu opened from the
      revealed chrome is still open ([data-autohide-held], set by the script).
-     The transition is the one of the state being entered, so the delay here
-     is the one before sliding in. */
+     The transition is the one of the state being entered, so the timing here
+     is the one for sliding in. */
   &:is(:hover, :focus-within, [data-autohide-held]) {
     transform: translateY(0);
+    transition-duration: var(--autohide-show-duration) !important;
     transition-delay: var(--autohide-show-delay) !important;
   }
 
