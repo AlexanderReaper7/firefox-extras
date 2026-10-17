@@ -13,9 +13,9 @@
    off its edge until only a handle is left, over transition_time with a
    smootherstep curve, after the pointer has been off the panel for
    wait_time. Sliding out takes half the default time and waits half as long,
-   which the user chose on 2026-10-17 after using it. Sliding in takes the
-   default time but starts at once, with no unhide_delay, the user's choice
-   of 2026-10-18.
+   which the user chose on 2026-10-17 after using it. Sliding in starts at
+   once, with no unhide_delay, and takes 150ms, the user's choice of
+   2026-10-18.
    ============================================================================= */
 
 #main-window {
@@ -26,8 +26,8 @@
      screen edge that stops the pointer, but a window with another one above
      it lets the pointer run past 4px. */
   --autohide-hot-zone: 16px;
-  /* transition_time, sliding in. */
-  --autohide-show-duration: 200ms;
+  /* transition_time, sliding in. COSMIC's default is 200ms. */
+  --autohide-show-duration: 150ms;
   /* wait_time: how long after the pointer leaves before it slides out.
      COSMIC's default is 1000ms. */
   --autohide-hide-delay: 500ms;
