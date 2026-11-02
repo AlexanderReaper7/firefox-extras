@@ -279,7 +279,7 @@ function Deploy-Loader {
     )
 
     if (-not $VendorDir) {
-        $scriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
+        $scriptDir = $PSScriptRoot
         $repoRoot   = Split-Path $scriptDir -Parent
         $VendorDir  = Join-Path $repoRoot "vendor\fx-autoconfig"
     }
@@ -342,7 +342,7 @@ function Deploy-Local {
         Write-Log "Using Firefox profile: $profileDir"
         
         # Check if local chrome directory exists
-        $scriptDir = Split-Path $MyInvocation.MyCommand.Path -Parent
+        $scriptDir = $PSScriptRoot
         $localChromeDir = Join-Path (Split-Path $scriptDir -Parent) "chrome"
         
         if (-not (Test-Path $localChromeDir)) {
