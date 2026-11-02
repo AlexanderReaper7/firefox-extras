@@ -2,7 +2,7 @@
 // @name           Auto-hide Toolbar
 // @description    Toolbar widget and Shift+F11 shortcut that toggle auto-hiding the browser chrome
 // @author         AlexanderReaper7
-// @version        1.1.0
+// @version        1.2.0
 // @homepageURL    https://github.com/AlexanderReaper7/firefox-extras
 // ==/UserScript==
 
@@ -15,7 +15,9 @@
   const HELD_ATTR = 'data-autohide-held';
   const log = (...args) => console.log('[autohide-toolbar]', ...args);
 
-  const isEnabled = () => Services.prefs.getBoolPref(PREF_NAME, false);
+  // On until the user turns it off: a profile without the pref, such as a new
+  // deploy, starts with the chrome hidden. The user's choice of 2026-11-02.
+  const isEnabled = () => Services.prefs.getBoolPref(PREF_NAME, true);
   const toggle = () => Services.prefs.setBoolPref(PREF_NAME, !isEnabled());
 
   function applyState() {

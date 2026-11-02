@@ -48,7 +48,7 @@ The `autohide-toolbar.uc.js` user script (`chrome/JS/autohide-toolbar.uc.js`) hi
 - A menu or panel opened from the revealed chrome keeps it revealed until every open menu has closed. A menu opened from the page while the chrome is hidden does not reveal it.
 - Customize mode and fullscreen use Firefox's normal layout.
 
-Toggle it with the toolbar button, which can be moved from the "Customize toolbar..." menu, or with Shift+F11. The state persists across restarts in the `userchrome.autohide-toolbar.enabled` preference.
+It is on by default. Toggle it with the toolbar button, which can be moved from the "Customize toolbar..." menu, or with Shift+F11. The state persists across restarts in the `userchrome.autohide-toolbar.enabled` preference, and a profile without that preference has it on.
 
 ### ⚠️ Loader install requires elevation on some platforms
 
