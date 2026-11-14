@@ -88,9 +88,11 @@
 
   /* Reveal on hover, and on keyboard focus or while a menu opened from the
      revealed chrome is still open ([data-autohide-held], set by the script).
+     On Windows also while the pointer is in the window's top resize border
+     ([data-autohide-edge], set by the script), where it gives no hover.
      The transition is the one of the state being entered, so the timing here
      is the one for sliding in. */
-  &:is(:hover, :focus-within, [data-autohide-held]) {
+  &:is(:hover, :focus-within, [data-autohide-held], [data-autohide-edge]) {
     transform: translateY(0);
     transition-duration: var(--autohide-show-duration) !important;
     transition-delay: 0s !important;

@@ -2,7 +2,7 @@
 // @name           Auto-hide Toolbar
 // @description    Toolbar widget and Shift+F11 shortcut that toggle auto-hiding the browser chrome
 // @author         AlexanderReaper7
-// @version        1.2.0
+// @version        1.3.0
 // @homepageURL    https://github.com/AlexanderReaper7/firefox-extras
 // ==/UserScript==
 
@@ -81,6 +81,72 @@
       toolbox.removeAttribute(HELD_ATTR);
     }
   }, true);
+
+  // On Windows the top few pixels of a window that is not maximized, a snapped
+  // one included, are its resize border, and resizing wins there over the page
+  // (nsWindow::ClientMarginHitTestPoint). A pointer pushed against the top of
+  // the screen sits in that border, so the handle under it never gets :hover.
+  // Firefox does report the pointer leaving the window there, but the event
+  // carries the last position inside the window, not the one in the border, so
+  // the pointer's position is asked of Windows. A leave with the pointer in the
+  // window's top hot zone marks the toolbox revealed until the pointer moves
+  // inside the window again. A pointer that reaches the top edge from another
+  // window, without crossing Firefox, sends Firefox nothing and does not
+  // reveal it.
+  const EDGE_ATTR = 'data-autohide-edge';
+  if (AppConstants.platform === 'win') {
+    let user32;
+    const pointerInTopEdge = () => {
+      if (!user32) {
+        const { ctypes } = ChromeUtils.importESModule('resource://gre/modules/ctypes.sys.mjs');
+        const lib = ctypes.open('user32.dll');
+        const POINT = new ctypes.StructType('POINT', [{ x: ctypes.int32_t }, { y: ctypes.int32_t }]);
+        const RECT = new ctypes.StructType('RECT', [
+          { left: ctypes.int32_t },
+          { top: ctypes.int32_t },
+          { right: ctypes.int32_t },
+          { bottom: ctypes.int32_t },
+        ]);
+        user32 = {
+          POINT,
+          RECT,
+          hwnd: () => ctypes.voidptr_t(ctypes.UInt64(window.docShell.treeOwner.QueryInterface(Ci.nsIBaseWindow).nativeHandle)),
+          GetCursorPos: lib.declare('GetCursorPos', ctypes.winapi_abi, ctypes.bool, POINT.ptr),
+          GetWindowRect: lib.declare('GetWindowRect', ctypes.winapi_abi, ctypes.bool, ctypes.voidptr_t, RECT.ptr),
+        };
+      }
+      const point = new user32.POINT();
+      const rect = new user32.RECT();
+      if (!user32.GetCursorPos(point.address()) || !user32.GetWindowRect(user32.hwnd(), rect.address())) {
+        return false;
+      }
+      // Both in physical pixels; the hot zone is in CSS pixels.
+      const hotZone =
+        (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--autohide-hot-zone')) || 16) *
+        window.devicePixelRatio;
+      return (
+        point.x >= rect.left && point.x < rect.right && point.y >= rect.top && point.y < rect.top + hotZone
+      );
+    };
+    window.addEventListener('mouseout', (e) => {
+      if (e.relatedTarget !== null) {
+        return;
+      }
+      // When the leave is dispatched, GetCursorPos still returns the position
+      // before the move that left the window (measured on Firefox 159), so the
+      // cursor is read a moment later.
+      setTimeout(() => {
+        try {
+          if (pointerInTopEdge()) {
+            toolbox.setAttribute(EDGE_ATTR, '');
+          }
+        } catch (error) {
+          log('top edge check failed:', error.message);
+        }
+      }, 50);
+    }, true);
+    window.addEventListener('mousemove', () => toolbox.removeAttribute(EDGE_ATTR), true);
+  }
 
   // Give the toolbox the COSMIC panel's background: the theme's background
   // colour at the panel's opacity, read from the same config files the panel
