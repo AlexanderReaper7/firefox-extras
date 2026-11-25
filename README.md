@@ -51,6 +51,16 @@ The `autohide-toolbar.uc.js` user script (`chrome/JS/autohide-toolbar.uc.js`) hi
 
 It is on by default. Toggle it with the toolbar button, which can be moved from the "Customize toolbar..." menu, or with Shift+F11. The state persists across restarts in the `userchrome.autohide-toolbar.enabled` preference, and a profile without that preference has it on.
 
+### YouTube Quality
+
+`chrome/JS/youtube-quality.sys.mjs` sets every YouTube video to the highest quality it offers up to 2160p. Without it, YouTube picks a quality to fit the player's size, 480p in a small window. Enhancer for YouTube 2.0.136 has a setting for this, but it often applies the quality before the player has listed the qualities it offers, and then never tries again.
+
+- It sets the quality once per video, so a quality picked by hand in the player menu stays until the next video.
+- It also covers a video opened from inside YouTube, such as a related video, which loads without a new page.
+- The quality list is `WANTED` at the top of `chrome/JS/youtube-quality/YouTubeQualityChild.sys.mjs`.
+
+It is a background module and a window actor, so it needs the JS loader below and a Firefox restart.
+
 ### ⚠️ Loader install requires elevation on some platforms
 
 The loader requires two files to be placed in the **Firefox installation

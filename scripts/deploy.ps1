@@ -369,9 +369,16 @@ function Deploy-Local {
             if (Test-Path $srcSubdir) {
                 $destSubdir = Join-Path $targetChromeDir $subdir
                 New-Item $destSubdir -ItemType Directory -Force | Out-Null
-                Get-ChildItem $srcSubdir -File | ForEach-Object {
-                    Copy-Item $_.FullName (Join-Path $destSubdir $_.Name) -Force
-                    Write-Log "Copied $subdir/$($_.Name) to Firefox profile"
+                # Recursive: a window actor's module sits in a folder of its own
+                # (JS/youtube-quality/).
+                # Path.GetRelativePath is missing from Windows PowerShell 5.1.
+                $srcRoot = (Resolve-Path $srcSubdir).Path
+                Get-ChildItem $srcSubdir -File -Recurse | ForEach-Object {
+                    $relative = $_.FullName.Substring($srcRoot.Length).TrimStart('\', '/')
+                    $destFile = Join-Path $destSubdir $relative
+                    New-Item (Split-Path $destFile -Parent) -ItemType Directory -Force | Out-Null
+                    Copy-Item $_.FullName $destFile -Force
+                    Write-Log "Copied $subdir/$relative to Firefox profile"
                 }
             }
         }
